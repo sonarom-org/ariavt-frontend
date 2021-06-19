@@ -6,10 +6,11 @@ import Login from './Login';
 import Dashboard from './Dashboard';
 import Home from './Home';
 import UploadFiles from "./component/uploadFiles";
+import Album from "./component/Album";
 
 import PrivateRoute from './Utils/PrivateRoute';
 import PublicRoute from './Utils/PublicRoute';
-import { getToken, removeUserSession, setUserSession } from './Utils/Common';
+import { getToken, removeUserSession, setUserSession } from './Utils/authentication';
 
 import config from "./config.json";
 
@@ -63,6 +64,10 @@ function App() {
               Image upload
             </NavLink>
             <small>(Access with token only)</small>
+            <NavLink activeClassName="active" to="/album">
+              Image gallery
+            </NavLink>
+            <small>(Access with token only)</small>
           </div>
           <div className="content">
             <Switch>
@@ -70,6 +75,7 @@ function App() {
               <PublicRoute path="/login" component={Login} />
               <PrivateRoute path="/dashboard" component={Dashboard} />
               <PrivateRoute path="/image-upload" component={UploadFiles} />
+              <PrivateRoute path="/album" component={Album} />
             </Switch>
           </div>
         </div>

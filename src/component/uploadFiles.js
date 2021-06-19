@@ -2,7 +2,7 @@ import axios from 'axios';
 import React,{Component} from 'react';
 
 import config from "../config.json";
-import {getToken} from "../Utils/Common";
+import {getToken} from "../Utils/authentication";
 
 
 class UploadFiles extends Component {

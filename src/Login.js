@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { setUserSession } from './Utils/Common';
+import { setUserSession } from './Utils/authentication';
 import config from "./config.json";
 
 function Login(props) {
