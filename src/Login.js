@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { setUserSession } from './Utils/Common';
+import config from "./config.json";
 
 function Login(props) {
   const [loading, setLoading] = useState(false);
@@ -16,11 +17,11 @@ function Login(props) {
     formData.append("username", username.value.toString())
     formData.append("password", password.value.toString())
 
-    axios.post('http://localhost:8000/token',
-      formData).then(response => {
-        console.log(response);
-        setLoading(false);
-        setUserSession(response.data[`access_token`], username);
+    axios.post(config.API_URL+"/token", formData
+    ).then(response => {
+      console.log(response);
+      setLoading(false);
+      setUserSession(response.data[`access_token`], username.value.toString());
       props.history.push('/dashboard');
     }).catch(error => {
       setLoading(false);

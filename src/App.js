@@ -10,6 +10,8 @@ import PrivateRoute from './Utils/PrivateRoute';
 import PublicRoute from './Utils/PublicRoute';
 import { getToken, removeUserSession, setUserSession } from './Utils/Common';
 
+import config from "./config.json";
+
 
 function App() {
   const [authLoading, setAuthLoading] = useState(true);
@@ -20,7 +22,14 @@ function App() {
       return;
     }
 
-    axios.get(`http://localhost:4000/verifyToken?token=${token}`).then(response => {
+    axios.get(
+      config.API_URL+`/verify-token`,
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      }
+    ).then(response => {
       setUserSession(response.data.token, response.data.user);
       setAuthLoading(false);
     }).catch(error => {
