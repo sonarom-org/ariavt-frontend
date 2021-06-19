@@ -5,6 +5,7 @@ import axios from 'axios';
 import Login from './Login';
 import Dashboard from './Dashboard';
 import Home from './Home';
+import UploadFiles from "./component/uploadFiles";
 
 import PrivateRoute from './Utils/PrivateRoute';
 import PublicRoute from './Utils/PublicRoute';
@@ -58,12 +59,17 @@ function App() {
               Dashboard
             </NavLink>
             <small>(Access with token only)</small>
+            <NavLink activeClassName="active" to="/image-upload">
+              Image upload
+            </NavLink>
+            <small>(Access with token only)</small>
           </div>
           <div className="content">
             <Switch>
               <Route exact path="/" component={Home} />
               <PublicRoute path="/login" component={Login} />
               <PrivateRoute path="/dashboard" component={Dashboard} />
+              <PrivateRoute path="/image-upload" component={UploadFiles} />
             </Switch>
           </div>
         </div>

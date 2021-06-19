@@ -1,160 +1,102 @@
-import React, { Component } from "react";
-import LinearProgress from '@material-ui/core/LinearProgress';
-import { Box, Typography, Button, ListItem, withStyles } from '@material-ui/core';
+import axios from 'axios';
+import React,{Component} from 'react';
 
-import UploadService from "../services/upload-files.service";
+import config from "../config.json";
+import {getToken} from "../Utils/Common";
 
-const BorderLinearProgress = withStyles((theme) => ({
-  root: {
-    height: 15,
-    borderRadius: 5,
-  },
-  colorPrimary: {
-    backgroundColor: "#EEEEEE",
-  },
-  bar: {
-    borderRadius: 5,
-    backgroundColor: '#1a90ff',
-  },
-}))(LinearProgress);
 
-export default class UploadFiles extends Component {
-  constructor(props) {
-    super(props);
-    this.selectFile = this.selectFile.bind(this);
-    this.upload = this.upload.bind(this);
+class UploadFiles extends Component {
 
-    this.state = {
-      selectedFiles: undefined,
-      currentFile: undefined,
-      progress: 0,
-      message: "",
-      isError: false,
-      fileInfos: [],
-    };
-  }
+  state = {
 
-  componentDidMount() {
-    UploadService.getFiles().then((response) => {
-      this.setState({
-        fileInfos: response.data,
-      });
+    // Initially, no file is selected
+    selectedFile: null
+  };
+
+  // On file select (from the pop up)
+  onFileChange = event => {
+    // Update the state
+    this.setState({ selectedFile: event.target.files[0] });
+  };
+
+  // On file upload (click the upload button)
+  onFileUpload = () => {
+    // Create an object of formData
+    const formData = new FormData();
+
+    // Update the formData object
+    formData.append(
+      "file",
+      this.state.selectedFile,
+      // this.state.selectedFile.name
+    );
+
+    // Details of the uploaded file
+    console.log(this.state.selectedFile);
+
+    // Request made to the backend api
+    // Send formData object
+    const token = getToken();
+    if (!token) {
+      return;
+    }
+    return axios.post(config.API_URL + "/images/", formData, {
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "multipart/form-data",
+        "accept": "application/json"
+      }
+    }).then(response => {
+      // setUserSession(response.data.token, response.data.user);
+      // setAuthLoading(false);
+    }).catch(error => {
+      // removeUserSession();
+      // setAuthLoading(false);
     });
-  }
+  };
 
-  selectFile(event) {
-    this.setState({
-      selectedFiles: event.target.files,
-    });
-  }
+  // File content to be displayed after
+  // file upload is complete
+  fileData = () => {
+    if (this.state.selectedFile) {
 
-  upload() {
-    let currentFile = this.state.selectedFiles[0];
-
-    this.setState({
-      progress: 0,
-      currentFile: currentFile,
-    });
-
-    UploadService.upload(currentFile, (event) => {
-      this.setState({
-        progress: Math.round((100 * event.loaded) / event.total),
-      });
-    })
-      .then((response) => {
-        this.setState({
-          message: response.data.message,
-          isError: false
-        });
-        return UploadService.getFiles();
-      })
-      .then((files) => {
-        this.setState({
-          fileInfos: files.data,
-        });
-      })
-      .catch(() => {
-        this.setState({
-          progress: 0,
-          message: "Could not upload the file!",
-          currentFile: undefined,
-          isError: true
-        });
-      });
-
-    this.setState({
-      selectedFiles: undefined,
-    });
-  }
+      return (
+        <div>
+          <h2>File Details:</h2>
+          <p>File Name: {this.state.selectedFile.name}</p>
+          <p>File Type: {this.state.selectedFile.type}</p>
+          {/*<p>*/}
+          {/*  Last Modified:{" "}*/}
+          {/*  /!*{this.state.selectedFile.lastModifiedDate.toDateString()}*!/*/}
+          {/*</p>*/}
+        </div>
+      );
+    } else {
+      return (
+        <div>
+          <br />
+          <h4>Choose before Pressing the Upload button</h4>
+        </div>
+      );
+    }
+  };
 
   render() {
-    const {
-      selectedFiles,
-      currentFile,
-      progress,
-      message,
-      fileInfos,
-      isError
-    } = this.state;
-    
     return (
-      <div className="mg20">
-        {currentFile && (
-          <Box className="mb25" display="flex" alignItems="center">
-            <Box width="100%" mr={1}>
-              <BorderLinearProgress variant="determinate" value={progress} />
-            </Box>
-            <Box minWidth={35}>
-              <Typography variant="body2" color="textSecondary">{`${progress}%`}</Typography>
-            </Box>
-          </Box>)
-        }
-
-        <label htmlFor="btn-upload">
-          <input
-            id="btn-upload"
-            name="btn-upload"
-            style={{ display: 'none' }}
-            type="file"
-            onChange={this.selectFile} />
-          <Button
-            className="btn-choose"
-            variant="outlined"
-            component="span" >
-             Choose Files
-          </Button>
-        </label>
-        <div className="file-name">
-        {selectedFiles && selectedFiles.length > 0 ? selectedFiles[0].name : null}
+      <div>
+        <h2>
+          Upload image
+        </h2>
+        <div>
+          <input type="file" onChange={this.onFileChange} />
+          <button onClick={this.onFileUpload}>
+            Upload!
+          </button>
         </div>
-        <Button
-          className="btn-upload"
-          color="primary"
-          variant="contained"
-          component="span"
-          disabled={!selectedFiles}
-          onClick={this.upload}>
-          Upload
-        </Button>
-
-        <Typography variant="subtitle2" className={`upload-message ${isError ? "error" : ""}`}>
-          {message}
-        </Typography>
-
-        <Typography variant="h6" className="list-header">
-          List of Files
-          </Typography>
-        <ul className="list-group">
-          {fileInfos &&
-            fileInfos.map((file, index) => (
-              <ListItem
-                divider
-                key={index}>
-                <a href={file.url}>{file.name}</a>
-              </ListItem>
-            ))}
-        </ul>
-      </div >
+        {this.fileData()}
+      </div>
     );
   }
 }
+
+export default UploadFiles;

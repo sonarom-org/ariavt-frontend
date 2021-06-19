@@ -1,22 +1,51 @@
-import http from "../http-common";
+import {getToken} from "../Utils/Common";
+import axios from "axios";
+import config from "../config.json";
 
 class UploadFilesService {
   upload(file, onUploadProgress) {
     let formData = new FormData();
 
-    formData.append("file", file);
+    const token = getToken();
+    if (!token) {
+      return;
+    }
 
-    return http.post("/upload", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-      onUploadProgress,
-    });
+    formData.append("file", file);
+    try {
+      return axios.post(config.API_URL + `/images/`, formData, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+        onUploadProgress,
+      });
+    } catch (e) {
+      // -
+    }
   }
 
   getFiles() {
-    return http.get("/images/");
+
+    const token = getToken();
+    if (!token) {
+      return;
+    }
+
+    try {
+      return axios.get(
+        config.API_URL + `/images/`,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        }
+      );
+    } catch (e) {
+      // Nothing
+    }
   }
+
 }
 
 export default new UploadFilesService();
