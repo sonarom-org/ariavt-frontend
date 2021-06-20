@@ -7,12 +7,14 @@ import Dashboard from './Dashboard';
 import Home from './Home';
 import UploadFiles from "./component/uploadFiles";
 import Album from "./component/Album";
+import {Footer, NavigationBar} from "./common_ui";
 
 import PrivateRoute from './Utils/PrivateRoute';
 import PublicRoute from './Utils/PublicRoute';
 import { getToken, removeUserSession, setUserSession } from './Utils/authentication';
 
 import config from "./config.json";
+import CssBaseline from "@material-ui/core/CssBaseline";
 
 
 function App() {
@@ -46,6 +48,8 @@ function App() {
 
   return (
     <div className="App">
+      <CssBaseline />
+      {/*<NavigationBar />*/}
       <BrowserRouter>
         <div>
           <div className="header">
@@ -80,6 +84,7 @@ function App() {
           </div>
         </div>
       </BrowserRouter>
+      {/*<Footer />*/}
     </div>
   );
 }
