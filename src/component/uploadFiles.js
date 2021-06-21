@@ -49,6 +49,7 @@ class UploadFiles extends Component {
     }).then(response => {
       // setUserSession(response.data.token, response.data.user);
       // setAuthLoading(false);
+      console.log(response);
     }).catch(error => {
       // removeUserSession();
       // setAuthLoading(false);

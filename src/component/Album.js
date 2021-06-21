@@ -1,18 +1,17 @@
 import React from 'react';
-import AppBar from '@material-ui/core/AppBar';
+import {useEffect, useState} from 'react';
 import Button from '@material-ui/core/Button';
-import CameraIcon from '@material-ui/icons/PhotoCamera';
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
-import CssBaseline from '@material-ui/core/CssBaseline';
 import Grid from '@material-ui/core/Grid';
-import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
-import {Footer, NavigationBar} from "../common_ui";
+import {getToken} from "../Utils/authentication";
+import axios from "axios";
+import config from "../config.json";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -36,7 +35,7 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: 'column',
   },
   cardMedia: {
-    paddingTop: '56.25%', // 16:9
+    paddingTop: '100%',
   },
   cardContent: {
     flexGrow: 1,
@@ -47,10 +46,58 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const cards = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+
+const cards = [1, 2, 3]//, 4, 5, 6, 7, 8, 9];
 
 export default function Album() {
   const classes = useStyles();
+  const [imagesIds, setImagesIds] = useState({});
+  const [image, setImage] = useState({});
+  const token = getToken();
+
+  async function getImages() {
+    axios.get(
+      config.API_URL + "/images/base64/" + 1,
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      }
+    ).then(response => {
+      console.log(response);
+      setImage(response.data);
+    }).catch(error => {
+      // -
+    });
+  }
+
+  function getId(image) {
+    return image.id;
+  }
+
+  useEffect(()=>{
+    axios.get(
+      config.API_URL + "/images/",
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      }
+    ).then(response => {
+      console.log(response);
+      setImagesIds(response.data);
+      const ids = response.data.map(getId);
+      console.log(ids);
+      setImagesIds(ids);
+      getImages().then(response => {
+        // -
+      }).catch(error => {
+        // -
+      });
+    }).catch(error => {
+      // -
+    });
+  }, [token])
 
   return (
     <React.Fragment>
@@ -91,9 +138,11 @@ export default function Album() {
                 <Card className={classes.card}>
                   <CardMedia
                     className={classes.cardMedia}
-                    image="https://source.unsplash.com/random"
+                    image={`data:image/png;base64,${image}`}
+                    // component='img' src={`data:image/png;base64,${images}`}
                     title="Image title"
                   />
+                  {/*<p>{images}</p>*/}
                   <CardContent className={classes.cardContent}>
                     <Typography gutterBottom variant="h5" component="h2">
                       Heading
