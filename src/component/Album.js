@@ -47,29 +47,32 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-const cards = [1, 2, 3]//, 4, 5, 6, 7, 8, 9];
+// const cards = [1, 2, 3]//, 4, 5, 6, 7, 8, 9];
 
 export default function Album() {
+  const [images, setImages] = useState([]);
   const classes = useStyles();
-  const [imagesIds, setImagesIds] = useState({});
-  const [image, setImage] = useState({});
   const token = getToken();
 
-  async function getImages() {
-    axios.get(
-      config.API_URL + "/images/base64/" + 1,
-      {
-        headers: {
-          'Authorization': `Bearer ${token}`
+
+  async function getImages(ids) {
+    for (const id of ids){
+      axios.get(
+        config.API_URL + "/images/base64/" + id,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
         }
-      }
-    ).then(response => {
-      console.log(response);
-      setImage(response.data);
-    }).catch(error => {
-      // -
-    });
+      ).then(response => {
+        console.log(response);
+        setImages(images => [...images, {id: id, image: response.data}]);
+      }).catch(error => {
+        // TODO: add error message
+      });
+    }
   }
+
 
   function getId(image) {
     return image.id;
@@ -85,19 +88,19 @@ export default function Album() {
       }
     ).then(response => {
       console.log(response);
-      setImagesIds(response.data);
       const ids = response.data.map(getId);
       console.log(ids);
-      setImagesIds(ids);
-      getImages().then(response => {
+      getImages(ids).then(
         // -
-      }).catch(error => {
-        // -
+      ).catch(error => {
+        // TODO: add error message
       });
+      console.log(images);
     }).catch(error => {
-      // -
+      // TODO: add error message
     });
-  }, [token])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   return (
     <React.Fragment>
@@ -133,12 +136,15 @@ export default function Album() {
         {/* Images grid */}
         <Container className={classes.cardGrid} maxWidth="md">
           <Grid container spacing={4}>
-            {cards.map((card) => (
-              <Grid item key={card} xs={12} sm={6} md={4}>
+            {images.map(card => (
+              <Grid item key={card.id} xs={12} sm={6} md={4}>
                 <Card className={classes.card}>
                   <CardMedia
                     className={classes.cardMedia}
-                    image={`data:image/png;base64,${image}`}
+                    /* TODO: esto no tiene por qué ser image/png; variar según
+                        la imagen que venga. Se puede guardar en los objetos
+                        esa información. */
+                    image={`data:image/png;base64,${card.image}`}
                     // component='img' src={`data:image/png;base64,${images}`}
                     title="Image title"
                   />
