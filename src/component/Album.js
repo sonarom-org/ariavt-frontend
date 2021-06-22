@@ -66,7 +66,12 @@ export default function Album() {
         }
       ).then(response => {
         console.log(response);
-        setImages(images => [...images, {id: id, image: response.data}]);
+        // response.headers['']
+        setImages(images => [...images, {
+          id: id,
+          format: response.data.format,
+          image: response.data.image
+        }]);
       }).catch(error => {
         // TODO: add error message
       });
@@ -141,10 +146,7 @@ export default function Album() {
                 <Card className={classes.card}>
                   <CardMedia
                     className={classes.cardMedia}
-                    /* TODO: esto no tiene por qué ser image/png; variar según
-                        la imagen que venga. Se puede guardar en los objetos
-                        esa información. */
-                    image={`data:image/png;base64,${card.image}`}
+                    image={`data:image/${card.format};base64,${card.image}`}
                     // component='img' src={`data:image/png;base64,${images}`}
                     title="Image title"
                   />
