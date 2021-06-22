@@ -64,10 +64,10 @@ function App() {
               Dashboard
             </NavLink>
             <small>(Access with token only)</small>
-            <NavLink activeClassName="active" to="/image-upload">
-              Image upload
-            </NavLink>
-            <small>(Access with token only)</small>
+            {/*<NavLink activeClassName="active" to="/image-upload">*/}
+            {/*  Image upload*/}
+            {/*</NavLink>*/}
+            {/*<small>(Access with token only)</small>*/}
             <NavLink activeClassName="active" to="/album">
               Image gallery
             </NavLink>
@@ -78,7 +78,7 @@ function App() {
               <Route exact path="/" component={Home} />
               <PublicRoute path="/login" component={Login} />
               <PrivateRoute path="/dashboard" component={Dashboard} />
-              <PrivateRoute path="/image-upload" component={UploadFiles} />
+              {/*<PrivateRoute path="/image-upload" component={UploadFiles} />*/}
               <PrivateRoute path="/album" component={Album} />
             </Switch>
           </div>

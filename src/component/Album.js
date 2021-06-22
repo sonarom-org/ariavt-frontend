@@ -12,6 +12,7 @@ import Container from '@material-ui/core/Container';
 import {getToken} from "../Utils/authentication";
 import axios from "axios";
 import config from "../config.json";
+import UploadFiles from "./uploadFiles";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -47,30 +48,44 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-// const cards = [1, 2, 3]//, 4, 5, 6, 7, 8, 9];
 
 export default function Album() {
+  // In-memory images array
   const [images, setImages] = useState([]);
+  // Styles
   const classes = useStyles();
+  // Access token
   const token = getToken();
 
 
-  async function getImages(ids) {
+  function getImages(ids) {
     for (const id of ids){
       axios.get(
-        config.API_URL + "/images/base64/" + id,
+        config.API_URL + "/images/" + id,
         {
+          // Set authentication header
           headers: {
-            'Authorization': `Bearer ${token}`
-          }
+            'Authorization': `Bearer ${token}`,
+          },
+          // The response is a Blob object containing the binary data.
+          responseType: 'blob'
         }
       ).then(response => {
         console.log(response);
-        // response.headers['']
+        // Create object URL for the image
+        // https://stackoverflow.com/questions/39062595/
+        const image_url = URL.createObjectURL(
+          new Blob(
+            [response.data],
+            { type: response.headers["content-type"] }
+          )
+        );
+        console.log(image_url);
+        // Add image to the array of images
         setImages(images => [...images, {
           id: id,
-          format: response.data.format,
-          image: response.data.image
+          format: "png",
+          image: image_url
         }]);
       }).catch(error => {
         // TODO: add error message
@@ -84,6 +99,7 @@ export default function Album() {
   }
 
   useEffect(()=>{
+    // Get all the user images
     axios.get(
       config.API_URL + "/images/",
       {
@@ -93,17 +109,16 @@ export default function Album() {
       }
     ).then(response => {
       console.log(response);
+      // Build array with the ids of the images
       const ids = response.data.map(getId);
       console.log(ids);
-      getImages(ids).then(
-        // -
-      ).catch(error => {
-        // TODO: add error message
-      });
+      // Get image files for the given ids
+      getImages(ids);
       console.log(images);
     }).catch(error => {
       // TODO: add error message
     });
+    // Disable incorrect linting
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -136,6 +151,7 @@ export default function Album() {
               </Grid>
             </div>
           </Container>
+          <UploadFiles />
         </div>
         {/* End title */}
         {/* Images grid */}
@@ -146,8 +162,8 @@ export default function Album() {
                 <Card className={classes.card}>
                   <CardMedia
                     className={classes.cardMedia}
-                    image={`data:image/${card.format};base64,${card.image}`}
-                    // component='img' src={`data:image/png;base64,${images}`}
+                    // image={`data:image/${card.format};base64,${card.image}`}
+                    image={card.image}
                     title="Image title"
                   />
                   {/*<p>{images}</p>*/}
