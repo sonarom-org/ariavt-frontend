@@ -2,7 +2,7 @@ import axios from 'axios';
 import React,{Component} from 'react';
 
 import config from "../config.json";
-import {getToken} from "../Utils/Common";
+import {getToken} from "../Utils/authentication";
 
 
 class UploadFiles extends Component {
@@ -49,6 +49,7 @@ class UploadFiles extends Component {
     }).then(response => {
       // setUserSession(response.data.token, response.data.user);
       // setAuthLoading(false);
+      console.log(response);
     }).catch(error => {
       // removeUserSession();
       // setAuthLoading(false);

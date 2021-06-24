@@ -6,12 +6,15 @@ import Login from './Login';
 import Dashboard from './Dashboard';
 import Home from './Home';
 import UploadFiles from "./component/uploadFiles";
+import Album from "./component/Album";
+import {Footer, NavigationBar} from "./common_ui";
 
 import PrivateRoute from './Utils/PrivateRoute';
 import PublicRoute from './Utils/PublicRoute';
-import { getToken, removeUserSession, setUserSession } from './Utils/Common';
+import { getToken, removeUserSession, setUserSession } from './Utils/authentication';
 
 import config from "./config.json";
+import CssBaseline from "@material-ui/core/CssBaseline";
 
 
 function App() {
@@ -45,6 +48,8 @@ function App() {
 
   return (
     <div className="App">
+      <CssBaseline />
+      {/*<NavigationBar />*/}
       <BrowserRouter>
         <div>
           <div className="header">
@@ -59,8 +64,12 @@ function App() {
               Dashboard
             </NavLink>
             <small>(Access with token only)</small>
-            <NavLink activeClassName="active" to="/image-upload">
-              Image upload
+            {/*<NavLink activeClassName="active" to="/image-upload">*/}
+            {/*  Image upload*/}
+            {/*</NavLink>*/}
+            {/*<small>(Access with token only)</small>*/}
+            <NavLink activeClassName="active" to="/album">
+              Image gallery
             </NavLink>
             <small>(Access with token only)</small>
           </div>
@@ -69,11 +78,13 @@ function App() {
               <Route exact path="/" component={Home} />
               <PublicRoute path="/login" component={Login} />
               <PrivateRoute path="/dashboard" component={Dashboard} />
-              <PrivateRoute path="/image-upload" component={UploadFiles} />
+              {/*<PrivateRoute path="/image-upload" component={UploadFiles} />*/}
+              <PrivateRoute path="/album" component={Album} />
             </Switch>
           </div>
         </div>
       </BrowserRouter>
+      {/*<Footer />*/}
     </div>
   );
 }
