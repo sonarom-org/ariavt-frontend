@@ -12,6 +12,7 @@ import Container from '@material-ui/core/Container';
 import {getToken} from "../Utils/authentication";
 import axios from "axios";
 import config from "../config.json";
+import {Footer} from "../common_ui";
 import UploadFiles from "./uploadFiles";
 
 
@@ -138,24 +139,24 @@ export default function Album() {
             </Typography>
             <div className={classes.heroButtons}>
               <Grid container spacing={2} justify="center">
-                <Grid item>
-                  <Button variant="contained" color="primary">
-                    Upload image
-                  </Button>
-                </Grid>
+              {/*  <Grid item>*/}
+              {/*    <Button variant="contained" color="primary">*/}
+              {/*      Upload image*/}
+              {/*    </Button>*/}
+              {/*  </Grid>*/}
                 {/*<Grid item>*/}
                 {/*  <Button variant="outlined" color="primary">*/}
                 {/*    Secondary action*/}
                 {/*  </Button>*/}
                 {/*</Grid>*/}
+                <UploadFiles />
               </Grid>
             </div>
           </Container>
-          <UploadFiles />
         </div>
         {/* End title */}
         {/* Images grid */}
-        <Container className={classes.cardGrid} maxWidth="md">
+        <Container className={classes.cardGrid} maxWidth="lg">
           <Grid container spacing={4}>
             {images.map(card => (
               <Grid item key={card.id} xs={12} sm={6} md={4}>
@@ -167,22 +168,22 @@ export default function Album() {
                     title="Image title"
                   />
                   {/*<p>{images}</p>*/}
-                  <CardContent className={classes.cardContent}>
-                    <Typography gutterBottom variant="h5" component="h2">
-                      Heading
-                    </Typography>
-                    <Typography>
-                      This is a media card. You can use this section to describe the content.
-                    </Typography>
-                  </CardContent>
-                  <CardActions>
-                    <Button size="small" color="primary">
-                      View
-                    </Button>
-                    <Button size="small" color="primary">
-                      Edit
-                    </Button>
-                  </CardActions>
+                  {/*<CardContent className={classes.cardContent}>*/}
+                  {/*  <Typography gutterBottom variant="h5" component="h2">*/}
+                  {/*    Heading*/}
+                  {/*  </Typography>*/}
+                  {/*  <Typography>*/}
+                  {/*    This is a media card. You can use this section to describe the content.*/}
+                  {/*  </Typography>*/}
+                  {/*</CardContent>*/}
+                  {/*<CardActions>*/}
+                  {/*  <Button size="small" color="primary">*/}
+                  {/*    View*/}
+                  {/*  </Button>*/}
+                  {/*  <Button size="small" color="primary">*/}
+                  {/*    Edit*/}
+                  {/*  </Button>*/}
+                  {/*</CardActions>*/}
                 </Card>
               </Grid>
             ))}
@@ -190,7 +191,7 @@ export default function Album() {
         </Container>
         {/* End images grid */}
       </main>
-      {/*<Footer />*/}
+      <Footer />
     </React.Fragment>
   );
 }
