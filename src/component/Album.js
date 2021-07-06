@@ -52,7 +52,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Album() {
   // In-memory images array
-  const [images, setImages] = useState([]);
+  const [images, setImages] = useState({});
   // Styles
   const classes = useStyles();
   // Access token
@@ -61,7 +61,7 @@ export default function Album() {
 
   function getImages(ids) {
     for (const id of ids){
-      axios.get(
+      const requestFile = axios.get(
         config.API_URL + "/images/" + id,
         {
           // Set authentication header
@@ -71,26 +71,56 @@ export default function Album() {
           // The response is a Blob object containing the binary data.
           responseType: 'blob'
         }
-      ).then(response => {
-        console.log(response);
+      )
+
+      // Search params
+      const params = new URLSearchParams();
+      params.append('ids', id);
+
+      const requestData = axios.get(
+        config.API_URL + "/images/",
+        {
+          // Set authentication header
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+          params
+        }
+      )
+
+      axios.all(
+        [requestFile, requestData]
+      ).then(axios.spread((...responses) => {
+        const responseFile = responses[0]
+        const responseData = responses[1]
+        // use/access the results
+        console.log(responseFile);
         // Create object URL for the image
         // https://stackoverflow.com/questions/39062595/
         const image_url = URL.createObjectURL(
           new Blob(
-            [response.data],
-            { type: response.headers["content-type"] }
+            [responseFile.data],
+            { type: responseFile.headers["content-type"] }
           )
         );
         console.log(image_url);
         // Add image to the array of images
-        setImages(images => [...images, {
-          id: id,
-          format: "png",
-          image: image_url
-        }]);
-      }).catch(error => {
-        // TODO: add error message
+        setImages(images => ({
+          ...images,
+          [id]: {
+            format: "png",
+            image: image_url,
+            info: {
+              title: responseData.data[0].title,
+              text: responseData.data[0].text
+            }
+          }
+        }));
+      })).catch(errors => {
+        // react on errors.
+        // TODO: add error messages
       });
+
     }
   }
 
@@ -158,21 +188,21 @@ export default function Album() {
         {/* Images grid */}
         <Container className={classes.cardGrid} maxWidth="lg">
           <Grid container spacing={4}>
-            {images.map(card => (
-              <Grid item key={card.id} xs={12} sm={6} md={4}>
+            {Object.keys(images).map(key => (
+              <Grid item key={key} xs={12} sm={6} md={4}>
                 <Card className={classes.card}>
                   <CardMedia
                     className={classes.cardMedia}
                     // image={`data:image/${card.format};base64,${card.image}`}
-                    image={card.image}
+                    image={images[key].image}
                     title="Image title"
                   />
                   <CardContent className={classes.cardContent}>
                     <Typography gutterBottom variant="h5" component="h2">
-                      Heading
+                      {images[key].info.title}
                     </Typography>
                     <Typography>
-                      This is a media card. You can use this section to describe the content.
+                      {images[key].info.text}
                     </Typography>
                   </CardContent>
                   <CardActions>
