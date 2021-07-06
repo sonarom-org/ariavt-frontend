@@ -7,7 +7,8 @@ import Dashboard from './Dashboard';
 import Home from './Home';
 import UploadFiles from "./component/uploadFiles";
 import Album from "./component/Album";
-import {Footer, NavigationBar} from "./common_ui";
+// import {Footer, NavigationBar} from "./common_ui";
+import NavigationBar from "./common/NavigationBar"
 
 import PrivateRoute from './Utils/PrivateRoute';
 import PublicRoute from './Utils/PublicRoute';
@@ -49,30 +50,30 @@ function App() {
   return (
     <div className="App">
       <CssBaseline />
-      {/*<NavigationBar />*/}
       <BrowserRouter>
-        <div>
-          <div className="header">
-            <NavLink exact activeClassName="active" to="/">
-              Home
-            </NavLink>
-            <NavLink activeClassName="active" to="/login">
-              Login
-            </NavLink>
-            <small>(Access without token only)</small>
-            <NavLink activeClassName="active" to="/dashboard">
-              Dashboard
-            </NavLink>
-            <small>(Access with token only)</small>
-            {/*<NavLink activeClassName="active" to="/image-upload">*/}
-            {/*  Image upload*/}
-            {/*</NavLink>*/}
-            {/*<small>(Access with token only)</small>*/}
-            <NavLink activeClassName="active" to="/album">
-              Image gallery
-            </NavLink>
-            <small>(Access with token only)</small>
-          </div>
+      <NavigationBar />
+      {/*  <div>*/}
+          {/*<div className="header">*/}
+          {/*  <NavLink exact activeClassName="active" to="/">*/}
+          {/*    Home*/}
+          {/*  </NavLink>*/}
+          {/*  <NavLink activeClassName="active" to="/login">*/}
+          {/*    Login*/}
+          {/*  </NavLink>*/}
+          {/*  <small>(Access without token only)</small>*/}
+          {/*  <NavLink activeClassName="active" to="/dashboard">*/}
+          {/*    Dashboard*/}
+          {/*  </NavLink>*/}
+          {/*  <small>(Access with token only)</small>*/}
+          {/*  /!*<NavLink activeClassName="active" to="/image-upload">*!/*/}
+          {/*  /!*  Image upload*!/*/}
+          {/*  /!*</NavLink>*!/*/}
+          {/*  /!*<small>(Access with token only)</small>*!/*/}
+          {/*  <NavLink activeClassName="active" to="/album">*/}
+          {/*    Image gallery*/}
+          {/*  </NavLink>*/}
+          {/*  <small>(Access with token only)</small>*/}
+          {/*</div>*/}
           <div className="content">
             <Switch>
               <Route exact path="/" component={Home} />
@@ -82,7 +83,7 @@ function App() {
               <PrivateRoute path="/album" component={Album} />
             </Switch>
           </div>
-        </div>
+      {/*  </div>*/}
       </BrowserRouter>
       {/*<Footer />*/}
     </div>
