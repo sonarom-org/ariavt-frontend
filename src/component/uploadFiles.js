@@ -7,16 +7,28 @@ import {getToken} from "../Utils/authentication";
 
 class UploadFiles extends Component {
 
+  // Initial state
   state = {
-
     // Initially, no file is selected
-    selectedFile: null
+    selectedFile: null,
+    title: '',
+    text: ''
   };
 
-  // On file select (from the pop up)
+  // On file select (from the pop up for selecting the file to upload)
   onFileChange = event => {
     // Update the state
     this.setState({ selectedFile: event.target.files[0] });
+  };
+
+  onTitleChange = event => {
+    // Update the state
+    this.setState({ title: event.target.value });
+  };
+
+  onTextChange = event => {
+    // Update the state
+    this.setState({ text: event.target.value });
   };
 
   // On file upload (click the upload button)
@@ -24,11 +36,22 @@ class UploadFiles extends Component {
     // Create an object of formData
     const formData = new FormData();
 
-    // Update the formData object
+    // -> Update the formData object
+    // File
     formData.append(
       "file",
       this.state.selectedFile,
       // this.state.selectedFile.name
+    );
+    // Title
+    formData.append(
+      "title",
+      this.state.title
+    );
+    // Text
+    formData.append(
+      "text",
+      this.state.text
     );
 
     // Details of the uploaded file
@@ -66,10 +89,6 @@ class UploadFiles extends Component {
           <h2>File Details:</h2>
           <p>File Name: {this.state.selectedFile.name}</p>
           <p>File Type: {this.state.selectedFile.type}</p>
-          {/*<p>*/}
-          {/*  Last Modified:{" "}*/}
-          {/*  /!*{this.state.selectedFile.lastModifiedDate.toDateString()}*!/*/}
-          {/*</p>*/}
         </div>
       );
     } else {
@@ -90,6 +109,13 @@ class UploadFiles extends Component {
         </h2>
         <div>
           <input type="file" onChange={this.onFileChange} />
+          <br />
+          <label>Title</label>
+          <input type="text" onChange={this.onTitleChange} />
+          <br />
+          <label>Text</label>
+          <input type="text" onChange={this.onTextChange} />
+          <br />
           <button onClick={this.onFileUpload}>
             Upload!
           </button>
