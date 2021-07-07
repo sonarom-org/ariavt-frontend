@@ -8,7 +8,8 @@ import Home from './Home';
 import UploadFiles from "./component/uploadFiles";
 import Album from "./component/Album";
 // import {Footer, NavigationBar} from "./common_ui";
-import NavigationBar from "./common/NavigationBar"
+import NavigationBar from "./common/NavigationBar";
+import EmptyBar from "./common/EmptyBar";
 
 import PrivateRoute from './Utils/PrivateRoute';
 import PublicRoute from './Utils/PublicRoute';
@@ -51,7 +52,7 @@ function App() {
     <div className="App">
       <CssBaseline />
       <BrowserRouter>
-      <NavigationBar />
+      {/*<NavigationBar />*/}
       {/*  <div>*/}
           {/*<div className="header">*/}
           {/*  <NavLink exact activeClassName="active" to="/">*/}
@@ -76,11 +77,8 @@ function App() {
           {/*</div>*/}
           <div className="content">
             <Switch>
-              <Route exact path="/" component={Home} />
-              <PublicRoute path="/login" component={Login} />
-              <PrivateRoute path="/dashboard" component={Dashboard} />
-              {/*<PrivateRoute path="/image-upload" component={UploadFiles} />*/}
-              <PrivateRoute path="/album" component={Album} />
+              <Route exact path="/login" component={LoginContainer}/>
+              <Route component={DefaultContainer}/>
             </Switch>
           </div>
       {/*  </div>*/}
@@ -89,5 +87,26 @@ function App() {
     </div>
   );
 }
+
+const LoginContainer = () => (
+  <div className="container">
+    <EmptyBar />
+    <PublicRoute path="/login" component={Login} />
+  </div>
+)
+
+const DefaultContainer = () => (
+  <div>
+    <div className="container">
+      <NavigationBar />
+      <Route exact path="/" component={Home} />
+      {/*<PublicRoute path="/login" component={Login} />*/}
+      <PrivateRoute path="/dashboard" component={Dashboard} />
+      {/*<PrivateRoute path="/image-upload" component={UploadFiles} />*/}
+      <PrivateRoute path="/album" component={Album} />
+    </div>
+  </div>
+)
+
 
 export default App;
