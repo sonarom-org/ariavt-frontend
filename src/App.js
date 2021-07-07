@@ -52,38 +52,15 @@ function App() {
     <div className="App">
       <CssBaseline />
       <BrowserRouter>
-      {/*<NavigationBar />*/}
-      {/*  <div>*/}
-          {/*<div className="header">*/}
-          {/*  <NavLink exact activeClassName="active" to="/">*/}
-          {/*    Home*/}
-          {/*  </NavLink>*/}
-          {/*  <NavLink activeClassName="active" to="/login">*/}
-          {/*    Login*/}
-          {/*  </NavLink>*/}
-          {/*  <small>(Access without token only)</small>*/}
-          {/*  <NavLink activeClassName="active" to="/dashboard">*/}
-          {/*    Dashboard*/}
-          {/*  </NavLink>*/}
-          {/*  <small>(Access with token only)</small>*/}
-          {/*  /!*<NavLink activeClassName="active" to="/image-upload">*!/*/}
-          {/*  /!*  Image upload*!/*/}
-          {/*  /!*</NavLink>*!/*/}
-          {/*  /!*<small>(Access with token only)</small>*!/*/}
-          {/*  <NavLink activeClassName="active" to="/album">*/}
-          {/*    Image gallery*/}
-          {/*  </NavLink>*/}
-          {/*  <small>(Access with token only)</small>*/}
-          {/*</div>*/}
-          <div className="content">
-            <Switch>
-              <Route exact path="/login" component={LoginContainer}/>
-              <Route component={DefaultContainer}/>
-            </Switch>
-          </div>
-      {/*  </div>*/}
+        <div className="content">
+          <Switch>
+            <Route exact path="/login" component={LoginContainer}/>
+            <Route exact path={["/", "/dashboard", "/album"]}
+                   component={DefaultContainer}/>
+            <Route component={NotFound} />
+          </Switch>
+        </div>
       </BrowserRouter>
-      {/*<Footer />*/}
     </div>
   );
 }
@@ -105,6 +82,15 @@ const DefaultContainer = () => (
       {/*<PrivateRoute path="/image-upload" component={UploadFiles} />*/}
       <PrivateRoute path="/album" component={Album} />
     </div>
+    {/*<Footer />*/}
+  </div>
+)
+
+
+const NotFound = () => (
+  <div className="container">
+    <EmptyBar />
+    <PublicRoute component={Login} />
   </div>
 )
 
