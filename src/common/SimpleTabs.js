@@ -40,6 +40,7 @@ export default function SimpleTabs() {
                 }}
                 value={location.pathname}
               >
+                {/* HOME */}
                 <Tab
                   classes={{
                     root: classes.fullHeight,
@@ -51,17 +52,19 @@ export default function SimpleTabs() {
                   component={Link}
                   to={allTabs[0]}
                 />
-                <Tab
-                  classes={{
-                    root: classes.fullHeight,
-                    selected: classes.colorfulTabs,
-                    // disabled: classes.colorfulTabs
-                  }}
-                  label="Login"
-                  value={allTabs[1]}
-                  component={Link}
-                  to={allTabs[1]}
-                />
+                {/* LOGIN */}
+                {/*<Tab*/}
+                {/*  classes={{*/}
+                {/*    root: classes.fullHeight,*/}
+                {/*    selected: classes.colorfulTabs,*/}
+                {/*    // disabled: classes.colorfulTabs*/}
+                {/*  }}*/}
+                {/*  label="Login"*/}
+                {/*  value={allTabs[1]}*/}
+                {/*  component={Link}*/}
+                {/*  to={allTabs[1]}*/}
+                {/*/>*/}
+                {/* DASHBOARD */}
                 <Tab
                   classes={{
                     root: classes.fullHeight,
@@ -73,6 +76,7 @@ export default function SimpleTabs() {
                   component={Link}
                   to={allTabs[2]}
                 />
+                {/* ALBUM */}
                 <Tab
                   classes={{
                     root: classes.fullHeight,
