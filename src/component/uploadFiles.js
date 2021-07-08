@@ -6,9 +6,9 @@ import {getToken} from "../Utils/authentication";
 import TextField from "@material-ui/core/TextField";
 import Button from '@material-ui/core/Button';
 import Box from '@material-ui/core/Box';
+import Grid from '@material-ui/core/Grid';
 
-
-export default function UploadFiles() {
+export default function UploadFiles(props) {
 
   const [state, setState] = useState({
     // Initially, no file is selected
@@ -86,11 +86,21 @@ export default function UploadFiles() {
       // setUserSession(response.data.token, response.data.user);
       // setAuthLoading(false);
       console.log(response);
+      props.handleUploaded();
     }).catch(error => {
       // removeUserSession();
       // setAuthLoading(false);
     });
   };
+
+  function handleCancel() {
+   setState({
+      // Initially, no file is selected
+      selectedFile: null,
+      title: '',
+      text: ''
+    });
+  }
 
   // File content to be displayed after
   // file upload is complete
@@ -98,12 +108,13 @@ export default function UploadFiles() {
     if (state.selectedFile) {
       return (
         <div>
-          <br />
-          <h3>File Details:</h3>
-          <ul>
-            <li>File Name: {state.selectedFile.name}</li>
-            <li>File Type: {state.selectedFile.type}</li>
-          </ul>
+          <h4>{state.selectedFile.name}</h4>
+          {/*<br />*/}
+          {/*<h3>File Details:</h3>*/}
+          {/*<ul>*/}
+          {/*  <li>File Name: {state.selectedFile.name}</li>*/}
+          {/*  <li>File Type: {state.selectedFile.type}</li>*/}
+          {/*</ul>*/}
         </div>
       );
     } else {
@@ -122,23 +133,26 @@ export default function UploadFiles() {
       </h2>
       <div>
 
-        <Box pt={2}>
-          <Button
-            variant="contained"
-            component="label"
-          >
-            Select file
-            <input
-              type="file"
-              hidden
-              required
-              onChange={onFileChange}
-            />
-          </Button>
-        </ Box>
+        {/* FILE */}
+        <div>
+          <Box pt={2}>
+            <Button
+              variant="contained"
+              component="label"
+            >
+              Select file
+              <input
+                type="file"
+                hidden
+                required
+                onChange={onFileChange}
+              />
+            </Button>
+          </ Box>
+          {fileData()}
+        </div>
 
-        {fileData()}
-
+        {/* TITLE */}
         <TextField
           variant="outlined"
           margin="normal"
@@ -148,12 +162,14 @@ export default function UploadFiles() {
           name="title"
           // autoFocus
           onChange={onTitleChange}
+          value={state.title}
         />
         <p>
           If no title is introduced, the filename of the image, without the
           extension, will be selected as such.
         </p>
 
+        {/* TEXT */}
         <TextField
           variant="outlined"
           margin="normal"
@@ -166,19 +182,33 @@ export default function UploadFiles() {
           rows={4}
           rowsMax={8}
           onChange={onTextChange}
+          value={state.text}
         />
 
-        {/* TODO: Button disabled if not file provided. */}
         <Box pt={2}>
-          <Button
-            color="primary"
-            disabled={(!state.selectedFile)}
-            variant="contained"
-            component="label"
-            onClick={onFileUpload}
-          >
-            Upload
-          </Button>
+          <Grid
+            container
+            direction="row"
+            justify="space-between"
+            alignItems="center">
+            <Button
+              color="default"
+              variant="contained"
+              component="label"
+              onClick={handleCancel}
+            >
+              Cancel
+            </Button>
+            <Button
+              color="primary"
+              disabled={(!state.selectedFile)}
+              variant="contained"
+              component="label"
+              onClick={onFileUpload}
+            >
+              Upload
+            </Button>
+          </Grid>
         </ Box>
 
       </div>
