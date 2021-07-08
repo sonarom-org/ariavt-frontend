@@ -14,6 +14,7 @@ import axios from "axios";
 import config from "../config.json";
 import {Footer} from "../common_ui";
 import UploadFiles from "./uploadFiles";
+import Box from "@material-ui/core/Box";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -42,10 +43,10 @@ const useStyles = makeStyles((theme) => ({
   cardContent: {
     flexGrow: 1,
   },
-  footer: {
-    backgroundColor: theme.palette.background.paper,
-    padding: theme.spacing(6),
-  },
+  fullHeight: {
+    // - <app bar height>
+    minHeight: 'calc(100vh - 48px)'
+  }
 }));
 
 
@@ -57,6 +58,8 @@ export default function Album() {
   const classes = useStyles();
   // Access token
   const token = getToken();
+  //
+  const [showUploadForm, setShowUploadForm] = React.useState(false)
 
 
   function getImages(ids) {
@@ -124,6 +127,9 @@ export default function Album() {
     }
   }
 
+  function onUploadImage(event) {
+    setShowUploadForm(!showUploadForm);
+  }
 
   function getId(image) {
     return image.id;
@@ -156,8 +162,7 @@ export default function Album() {
   return (
     <React.Fragment>
       {/*<CssBaseline />*/}
-      {/*<NavigationBar />*/}
-      <main>
+      <main className={classes.fullHeight}>
         {/* Title */}
         <div className={classes.heroContent}>
           <Container maxWidth="sm">
@@ -169,17 +174,21 @@ export default function Album() {
             </Typography>
             <div className={classes.heroButtons}>
               <Grid container spacing={2} justify="center">
-              {/*  <Grid item>*/}
-              {/*    <Button variant="contained" color="primary">*/}
-              {/*      Upload image*/}
-              {/*    </Button>*/}
-              {/*  </Grid>*/}
+                <Grid item>
+                  <Button
+                    variant="contained"
+                    color={ showUploadForm ? "default" : "primary" }
+                    onClick={onUploadImage}
+                  >
+                    { showUploadForm ? "Cancel" : "Upload image" }
+                  </Button>
+                </Grid>
                 {/*<Grid item>*/}
                 {/*  <Button variant="outlined" color="primary">*/}
                 {/*    Secondary action*/}
                 {/*  </Button>*/}
                 {/*</Grid>*/}
-                <UploadFiles />
+                { showUploadForm ? <UploadFiles /> : null }
               </Grid>
             </div>
           </Container>

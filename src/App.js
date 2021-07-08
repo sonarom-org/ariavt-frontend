@@ -76,7 +76,7 @@ const DefaultContainer = () => (
   <div>
     <div className="container">
       <NavigationBar />
-      <Route exact path="/" component={Home} />
+      <PrivateRoute exact path="/" component={Home} />
       {/*<PublicRoute path="/login" component={Login} />*/}
       <PrivateRoute path="/dashboard" component={Dashboard} />
       {/*<PrivateRoute path="/image-upload" component={UploadFiles} />*/}
