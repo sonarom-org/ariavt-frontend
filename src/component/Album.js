@@ -15,6 +15,7 @@ import config from "../config.json";
 import {Footer} from "../common_ui";
 import UploadFiles from "./uploadFiles";
 import Box from "@material-ui/core/Box";
+import RemoveImageDialog from "./RemoveImageDialog";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -52,14 +53,24 @@ const useStyles = makeStyles((theme) => ({
 
 
 export default function Album() {
+  // -> Styles
+  const classes = useStyles();
+  // -> Access token
+  const token = getToken();
+  // -> States
   // In-memory images array
   const [images, setImages] = useState({});
-  // Styles
-  const classes = useStyles();
-  // Access token
-  const token = getToken();
-  //
+  // Upload image form visibility
   const [showUploadForm, setShowUploadForm] = React.useState(false)
+  // Remove image dialog
+  const [removeImage, setRemoveImage] = React.useState({
+    showDialog: false,
+    imageName: null,
+    imageID: null,
+  });
+  // Refresh gallery
+  const [refresh, setRefresh] = useState(false);
+
 
 
   function getImages(ids) {
@@ -127,15 +138,87 @@ export default function Album() {
     }
   }
 
-  function onUploadImage(event) {
+  function handleRemoveImage(imageID, imageName) {
+    setRemoveImage({
+      showDialog: true,
+      imageID: imageID,
+      imageName: imageName
+    });
+  }
+
+  function handleCloseRemoveImageDialog() {
+    setRemoveImage({
+      ...removeImage,
+      showDialog: false
+    });
+  }
+
+  function handleYesRemoveImageDialog() {
+    console.log(removeImage.imageID);
+    axios.post(
+      config.API_URL + "/images/selection",
+      [removeImage.imageID],
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    ).then(response => {
+      console.log(response);
+      // Build array with the ids of the images
+      const selection = response.data['selection'];
+
+      console.log('SELECTION', selection);
+
+      axios.delete(
+        config.API_URL + "/images/selection/" + selection,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        }
+      ).then(response => {
+        console.log(response);
+        // Build array with the ids of the images
+        const removed = response.data['removed'];
+        console.log(removed);
+
+        setRemoveImage({
+          ...removeImage,
+          showDialog: false
+        });
+
+        delete images[removeImage.imageID];
+
+        doRefresh();
+      }).catch(error => {
+        // TODO: add error message
+      });
+    }).catch(error => {
+      // TODO: add error message
+    });
+  }
+
+  function handleUploadImage(event) {
     setShowUploadForm(!showUploadForm);
+  }
+
+  function doRefresh() {
+    setRefresh(!refresh);
+    console.log('REFRESHED');
+  }
+
+  function handleUploaded() {
+    // setShowUploadForm(false);
+    doRefresh();
   }
 
   function getId(image) {
     return image.id;
   }
 
-  useEffect(()=>{
+  function getImagesIDs() {
     // Get all the user images
     axios.get(
       config.API_URL + "/images/",
@@ -155,9 +238,56 @@ export default function Album() {
     }).catch(error => {
       // TODO: add error message
     });
+  }
+
+
+  useEffect(()=>{
+    getImagesIDs();
     // Disable incorrect linting
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [refresh])
+
+  function ImageCard(props) {
+    const imageID = props.imageID;
+    const image = props.image;
+
+    function handleRemove() {
+      handleRemoveImage(imageID, image.info.title);
+    }
+
+    console.log('KEY AND IMAGES', imageID, image);
+
+    return (
+      <Card className={classes.card}>
+        <CardMedia
+          className={classes.cardMedia}
+          // image={`data:image/${card.format};base64,${card.image}`}
+          image={image.image}
+          title="Image title"
+        />
+        <CardContent className={classes.cardContent}>
+          <Typography gutterBottom variant="h5" component="h2">
+            {image.info.title}
+          </Typography>
+          <Typography>
+            {image.info.text}
+          </Typography>
+        </CardContent>
+        <CardActions>
+          <Button size="small" color="primary">
+            View
+          </Button>
+          <Button
+            size="small"
+            color="primary"
+            onClick={handleRemove}
+          >
+            Remove
+          </Button>
+        </CardActions>
+      </Card>
+    );
+  }
 
   return (
     <React.Fragment>
@@ -178,17 +308,12 @@ export default function Album() {
                   <Button
                     variant="contained"
                     color={ showUploadForm ? "default" : "primary" }
-                    onClick={onUploadImage}
+                    onClick={handleUploadImage}
                   >
-                    { showUploadForm ? "Cancel" : "Upload image" }
+                    { showUploadForm ? "Close" : "Upload image" }
                   </Button>
                 </Grid>
-                {/*<Grid item>*/}
-                {/*  <Button variant="outlined" color="primary">*/}
-                {/*    Secondary action*/}
-                {/*  </Button>*/}
-                {/*</Grid>*/}
-                { showUploadForm ? <UploadFiles /> : null }
+                { showUploadForm ? <UploadFiles handleUploaded={handleUploaded} /> : null }
               </Grid>
             </div>
           </Container>
@@ -199,30 +324,11 @@ export default function Album() {
           <Grid container spacing={4}>
             {Object.keys(images).map(key => (
               <Grid item key={key} xs={12} sm={6} md={4}>
-                <Card className={classes.card}>
-                  <CardMedia
-                    className={classes.cardMedia}
-                    // image={`data:image/${card.format};base64,${card.image}`}
-                    image={images[key].image}
-                    title="Image title"
-                  />
-                  <CardContent className={classes.cardContent}>
-                    <Typography gutterBottom variant="h5" component="h2">
-                      {images[key].info.title}
-                    </Typography>
-                    <Typography>
-                      {images[key].info.text}
-                    </Typography>
-                  </CardContent>
-                  <CardActions>
-                    <Button size="small" color="primary">
-                      View
-                    </Button>
-                    <Button size="small" color="primary">
-                      Edit
-                    </Button>
-                  </CardActions>
-                </Card>
+                <ImageCard
+                  imageID={key}
+                  image={images[key]}
+                  styleClasses={classes}
+                />
               </Grid>
             ))}
           </Grid>
@@ -230,6 +336,14 @@ export default function Album() {
         {/* End images grid */}
       </main>
       <Footer />
+      <RemoveImageDialog
+        open={removeImage.showDialog}
+        handleClose={handleCloseRemoveImageDialog}
+        handleYes={handleYesRemoveImageDialog}
+        imageName={removeImage.imageName}
+      />
     </React.Fragment>
   );
 }
+
+
