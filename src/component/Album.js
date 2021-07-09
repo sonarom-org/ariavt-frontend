@@ -14,8 +14,8 @@ import axios from "axios";
 import config from "../config.json";
 import {Footer} from "../common_ui";
 import UploadFiles from "./uploadFiles";
-import Box from "@material-ui/core/Box";
 import RemoveImageDialog from "./RemoveImageDialog";
+import {SimpleIDB} from "../common/SimpleIDB";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -53,6 +53,7 @@ const useStyles = makeStyles((theme) => ({
 
 
 export default function Album() {
+
   // -> Styles
   const classes = useStyles();
   // -> Access token
@@ -72,71 +73,31 @@ export default function Album() {
   const [refresh, setRefresh] = useState(false);
 
 
+  // ------------------------------------------------------------------
+  // -> Database operations
 
-  function getImages(ids) {
-    for (const id of ids){
-      const requestFile = axios.get(
-        config.API_URL + "/images/" + id,
-        {
-          // Set authentication header
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-          // The response is a Blob object containing the binary data.
-          responseType: 'blob'
-        }
-      )
-
-      // Search params
-      const params = new URLSearchParams();
-      params.append('ids', id);
-
-      const requestData = axios.get(
-        config.API_URL + "/images/",
-        {
-          // Set authentication header
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-          params
-        }
-      )
-
-      axios.all(
-        [requestFile, requestData]
-      ).then(axios.spread((...responses) => {
-        const responseFile = responses[0]
-        const responseData = responses[1]
-        // use/access the results
-        console.log(responseFile);
-        // Create object URL for the image
-        // https://stackoverflow.com/questions/39062595/
-        const image_url = URL.createObjectURL(
-          new Blob(
-            [responseFile.data],
-            { type: responseFile.headers["content-type"] }
-          )
-        );
-        console.log(image_url);
-        // Add image to the array of images
-        setImages(images => ({
-          ...images,
-          [id]: {
-            format: "png",
-            image: image_url,
-            info: {
-              title: responseData.data[0].title,
-              text: responseData.data[0].text
-            }
-          }
-        }));
-      })).catch(errors => {
-        // react on errors.
-        // TODO: add error messages
-      });
-
+  function insertObject (id, image) {
+    try {
+      SimpleIDB.set(id, image).then();
+    } catch(e) {
     }
   }
+
+  function getObject (id) {
+    return SimpleIDB.get(id);
+  }
+
+  function removeObject (id) {
+    try {
+      SimpleIDB.remove(id).then(response => {
+          console.log('DELETED FROM DB');
+      });
+    } catch(e) {
+    }
+  }
+
+  // ------------------------------------------------------------------
+  // -> Handlers
 
   function handleRemoveImage(imageID, imageName) {
     setRemoveImage({
@@ -191,6 +152,8 @@ export default function Album() {
 
         delete images[removeImage.imageID];
 
+        removeObject(removeImage.imageID);
+
         doRefresh();
       }).catch(error => {
         // TODO: add error message
@@ -204,14 +167,116 @@ export default function Album() {
     setShowUploadForm(!showUploadForm);
   }
 
+  function handleUploaded() {
+    // setShowUploadForm(false);
+    doRefresh();
+  }
+
+
+  // ------------------------------------------------------------------
+  // -> Utils
+
   function doRefresh() {
     setRefresh(!refresh);
     console.log('REFRESHED');
   }
 
-  function handleUploaded() {
-    // setShowUploadForm(false);
-    doRefresh();
+
+  // ------------------------------------------------------------------
+  // -> Image retrieval
+
+  function getImages(ids) {
+    for (const id of ids){
+      console.log('>>>>>>>', id);
+      getObject(id).then(object => {
+        if (object) {
+          console.log('>>>>>>>>>>>>>>> LOCAL');
+          setImages(images => ({
+            ...images,
+            [id]: {
+              format: "png",
+              image: URL.createObjectURL(object.image),
+              info: {
+                title: object.info.title,
+                text: object.info.text
+              }
+            }
+          }));
+        } else {
+          console.log('>>>>>>>>>>>>>>> REMOTE');
+          const requestFile = axios.get(
+            config.API_URL + "/images/" + id,
+            {
+              // Set authentication header
+              headers: {
+                'Authorization': `Bearer ${token}`,
+              },
+              // The response is a Blob object containing the binary data.
+              responseType: 'blob'
+            }
+          )
+
+          // Search params
+          const params = new URLSearchParams();
+          params.append('ids', id);
+
+          const requestData = axios.get(
+            config.API_URL + "/images/",
+            {
+              // Set authentication header
+              headers: {
+                'Authorization': `Bearer ${token}`,
+              },
+              params
+            }
+          )
+
+          axios.all(
+            [requestFile, requestData]
+          ).then(axios.spread((...responses) => {
+            const responseFile = responses[0]
+            const responseData = responses[1]
+            // use/access the results
+            console.log(responseFile);
+            // Create object URL for the image
+            // https://stackoverflow.com/questions/39062595/
+            const blob =
+              new Blob(
+                [responseFile.data],
+                { type: responseFile.headers["content-type"] }
+              );
+            const image_url = URL.createObjectURL(blob);
+            console.log(image_url);
+            // Add image to the array of images
+            setImages(images => ({
+              ...images,
+              [id]: {
+                format: "png",
+                image: image_url,
+                info: {
+                  title: responseData.data[0].title,
+                  text: responseData.data[0].text
+                }
+              }
+            }));
+            const image = {
+              format: "png",
+              image: blob,
+              info: {
+                title: responseData.data[0].title,
+                text: responseData.data[0].text
+              }
+            };
+
+            insertObject(id, image);
+          })).catch(errors => {
+            // react on errors.
+            // TODO: add error messages
+          });
+        }
+      });
+
+    }
   }
 
   function getId(image) {
@@ -241,11 +306,17 @@ export default function Album() {
   }
 
 
+  // ------------------------------------------------------------------
+
   useEffect(()=>{
     getImagesIDs();
     // Disable incorrect linting
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refresh])
+
+
+  // ------------------------------------------------------------------
+  // -> Subcomponents
 
   function ImageCard(props) {
     const imageID = props.imageID;
@@ -288,6 +359,9 @@ export default function Album() {
       </Card>
     );
   }
+
+
+  // ------------------------------------------------------------------
 
   return (
     <React.Fragment>

@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter, Switch, Route, NavLink } from 'react-router-dom';
+import { BrowserRouter, Switch, Route } from 'react-router-dom';
 import axios from 'axios';
 
 import Login from './Login';
 import Dashboard from './Dashboard';
 import Home from './Home';
-import UploadFiles from "./component/uploadFiles";
 import Album from "./component/Album";
-// import {Footer, NavigationBar} from "./common_ui";
 import NavigationBar from "./common/NavigationBar";
 import EmptyBar from "./common/EmptyBar";
 
@@ -17,12 +15,16 @@ import { getToken, removeUserSession, setUserSession } from './Utils/authenticat
 
 import config from "./config.json";
 import CssBaseline from "@material-ui/core/CssBaseline";
+import {SimpleIDB} from "./common/SimpleIDB";
 
 
 function App() {
   const [authLoading, setAuthLoading] = useState(true);
 
   useEffect(() => {
+
+    SimpleIDB.initialize().then();
+
     const token = getToken();
     if (!token) {
       return;
