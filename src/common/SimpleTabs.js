@@ -1,15 +1,19 @@
-import React, { Fragment } from "react";
+import React, {Fragment, useEffect, useState} from "react";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import {Route, Link} from "react-router-dom";
 import {makeStyles} from "@material-ui/core/styles";
+import {SimpleIDB} from "./SimpleIDB";
+import {getToken, getUserRole, removeUserSession, setUserSession} from "../Utils/authentication";
+import axios from "axios";
+import config from "../config.json";
 
 
 const useStyles = makeStyles((theme) => ({
   // https://stackoverflow.com/questions/48928764
   fullHeight: {
     // ...theme.mixins.toolbar,
-    minHeight: 48
+    minHeight: 52
   },
   bigIndicator: {
     height: 4
@@ -23,9 +27,31 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-export default function SimpleTabs() {
-  const allTabs = ["/", "/login", "/dashboard", "/album"];
+export default function SimpleTabs(props) {
+  const allTabs = ["/", "/login", "/dashboard", "/album", "/administration"];
   const classes = useStyles();
+  const [isAdmin, setIsAdmin] = useState(null);
+
+  const isAdminUser = () => {
+    const role = getUserRole();
+    if (role) {
+      if (role === 'admin')
+        return true;
+      else
+        return null;
+    } else {
+      return null;
+    }
+  }
+
+  useEffect(() => {
+
+    setIsAdmin(isAdminUser());
+    console.log('isAdmin', isAdmin);
+
+  }, [isAdmin]);
+
+  console.log(isAdmin);
 
   return (
       <div className="App">
@@ -88,6 +114,18 @@ export default function SimpleTabs() {
                   component={Link}
                   to={allTabs[3]}
                 />
+                {/* ADMINISTRATION */}
+                {isAdmin && <Tab
+                  classes={{
+                    root: classes.fullHeight,
+                    selected: classes.colorfulTabs,
+                    // disabled: classes.colorfulTabs
+                  }}
+                  label="Administration"
+                  value={allTabs[4]}
+                  component={Link}
+                  to={allTabs[4]}
+                />}
               </Tabs>
             </Fragment>
           )}

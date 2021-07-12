@@ -1,0 +1,11 @@
+
+.markdown {
+    margin: 5%;
+    font-size: large;
+    min-height: calc(100vh - 48px)
+}
+
+.fullHeight {
+/* - <app bar height> */
+    min-height: calc(100vh - 48px)
+}

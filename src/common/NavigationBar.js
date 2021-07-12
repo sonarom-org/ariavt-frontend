@@ -6,10 +6,17 @@ import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
-import MenuIcon from '@material-ui/icons/Menu';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import MoreIcon from '@material-ui/icons/MoreVert';
 import SimpleTabs from "./SimpleTabs";
+import {removeUserSession} from "../Utils/authentication";
+import { useHistory } from 'react-router-dom';
+import Dialog from "@material-ui/core/Dialog";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogContentText from "@material-ui/core/DialogContentText";
+import DialogActions from "@material-ui/core/DialogActions";
+import Button from "@material-ui/core/Button";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -26,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
     },
     marginRight: theme.spacing(4),
     // Padding top to align text vertically
-    paddingTop: theme.spacing(0.7),
+    // paddingTop: theme.spacing(0.7),
   },
   sectionDesktop: {
     display: 'none',
@@ -41,7 +48,8 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   toolbarHeight: {
-    minHeight: 48
+    minHeight: 48,
+    // maxHeight: 48,
   },
 }));
 
@@ -50,9 +58,54 @@ export default function NavigationBar(props) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] =
     React.useState(null);
+  const history = useHistory();
+  const [openLogoutDialog, setOpenLogoutDialog] =
+    React.useState(false);
 
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+
+
+  function RemoveImageDialog(props) {
+
+    return (
+      <Dialog
+        open={openLogoutDialog}
+        onClose={handleCloseDialog}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">{"Log out?"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Do you really want to log out?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDialog} color="primary">
+            No
+          </Button>
+          <Button onClick={handleLogout} color="primary" autoFocus>
+            Yes
+          </Button>
+        </DialogActions>
+      </Dialog>
+    );
+  }
+
+  function handleCloseDialog() {
+    setOpenLogoutDialog(false);
+  }
+
+  function handleOpenDialog() {
+    setOpenLogoutDialog(true);
+  }
+
+  // handle click event of logout button
+  const handleLogout = () => {
+    removeUserSession();
+    history.push('/login');
+  }
 
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -83,7 +136,7 @@ export default function NavigationBar(props) {
       onClose={handleMenuClose}
     >
       <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-      <MenuItem onClick={handleMenuClose}>My account</MenuItem>
+      <MenuItem onClick={handleOpenDialog}>Logout</MenuItem>
     </Menu>
   );
 
@@ -112,13 +165,13 @@ export default function NavigationBar(props) {
       <AppBar position="static">
         <Toolbar className={classes.toolbarHeight}>
           {/* variant="dense" */}
-          <IconButton
-            edge="start"
-            className={classes.menuButton}
-            color="inherit"
-          >
-            <MenuIcon />
-          </IconButton>
+          {/*<IconButton*/}
+          {/*  edge="start"*/}
+          {/*  className={classes.menuButton}*/}
+          {/*  color="inherit"*/}
+          {/*>*/}
+          {/*  <MenuIcon />*/}
+          {/*</IconButton>*/}
           <Typography className={classes.title} variant="h6" noWrap>
             ARIAVT
           </Typography>
@@ -145,6 +198,7 @@ export default function NavigationBar(props) {
       </AppBar>
       {renderMobileMenu}
       {renderMenu}
+      <RemoveImageDialog />
     </div>
   );
 }

@@ -8,7 +8,7 @@ import Button from '@material-ui/core/Button';
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 
-export default function UploadFiles(props) {
+export default function UploadFile(props) {
 
   const [state, setState] = useState({
     // Initially, no file is selected
