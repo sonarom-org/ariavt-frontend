@@ -12,10 +12,10 @@ import Container from '@material-ui/core/Container';
 import {getToken} from "../Utils/authentication";
 import axios from "axios";
 import config from "../config.json";
-import {Footer} from "../common_ui";
-import UploadFiles from "./uploadFiles";
-import RemoveImageDialog from "./RemoveImageDialog";
+import {Footer, TypographyTitle} from "../CommonUI";
+import UploadFile from "./UploadFile";
 import {SimpleIDB} from "../common/SimpleIDB";
+import RemoveItemDialog from "./RemoveItemDialog";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -370,12 +370,10 @@ export default function Album() {
         {/* Title */}
         <div className={classes.heroContent}>
           <Container maxWidth="sm">
-            <Typography component="h1" variant="h2" align="center" color="textPrimary" gutterBottom>
-              Image gallery
-            </Typography>
-            <Typography variant="h5" align="center" color="textSecondary" paragraph>
-              All images uploaded to the application.
-            </Typography>
+            <TypographyTitle
+              title={"Image gallery"}
+              subtitle={"All images uploaded to the application."}
+            />
             <div className={classes.heroButtons}>
               <Grid container spacing={2} justify="center">
                 <Grid item>
@@ -387,7 +385,7 @@ export default function Album() {
                     { showUploadForm ? "Close" : "Upload image" }
                   </Button>
                 </Grid>
-                { showUploadForm ? <UploadFiles handleUploaded={handleUploaded} /> : null }
+                { showUploadForm ? <UploadFile handleUploaded={handleUploaded} /> : null }
               </Grid>
             </div>
           </Container>
@@ -410,11 +408,12 @@ export default function Album() {
         {/* End images grid */}
       </main>
       <Footer />
-      <RemoveImageDialog
+      <RemoveItemDialog
         open={removeImage.showDialog}
         handleClose={handleCloseRemoveImageDialog}
         handleYes={handleYesRemoveImageDialog}
-        imageName={removeImage.imageName}
+        itemName={removeImage.imageName}
+        itemType="image"
       />
     </React.Fragment>
   );

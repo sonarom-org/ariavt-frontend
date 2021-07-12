@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { setUserSession } from './Utils/authentication';
+import { setUserSession, setUserInfo } from './Utils/authentication';
 import config from "./config.json";
 import Container from "@material-ui/core/Container";
 import Avatar from "@material-ui/core/Avatar";
@@ -10,7 +10,7 @@ import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import Box from "@material-ui/core/Box";
 import {makeStyles} from "@material-ui/core/styles";
-import {Copyright} from "./common_ui";
+import {Copyright} from "./CommonUI";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -50,12 +50,32 @@ function Login(props) {
     formData.append("username", username.value.toString())
     formData.append("password", password.value.toString())
 
-    return axios.post(config.API_URL+"/token", formData
+
+    axios.post(config.API_URL+"/token", formData
     ).then(response => {
       console.log(response);
       setLoading(false);
-      setUserSession(response.data[`access_token`], username.value.toString());
-      props.history.push('/dashboard');
+      setUserSession(response.data["access_token"], username.value.toString());
+
+      axios.get(config.API_URL+"/users/me",
+        {
+          headers: {
+            'Authorization': `Bearer ${response.data["access_token"]}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      ).then(response => {
+        setUserInfo(response.data);
+        // Push /dashboard after retrieving all the necessary user data
+        props.history.push('/dashboard');
+      }).catch(error => {
+        if (error.response.status === 401) {
+          setError(error.response.data.message);
+        } else {
+          setError("Something went wrong. Please try again later.");
+        }
+      });
+
     }).catch(error => {
       setLoading(false);
       if (error.response.status === 401) {
@@ -64,6 +84,12 @@ function Login(props) {
         setError("Something went wrong. Please try again later.");
       }
     });
+  }
+
+  const handleKeyDown = (event) => {
+    if (event.key === 'Enter') {
+      handleLogin();
+    }
   }
 
   return (
@@ -82,7 +108,7 @@ function Login(props) {
           fullWidth
           id="username"
           label="Username"
-          type="username"
+          // type="username"
           {...username}
           name="username"
           autoComplete="username"
@@ -99,6 +125,7 @@ function Login(props) {
           {...password}
           id="password"
           autoComplete="current-password"
+          onKeyDown={handleKeyDown}
         />
         {error && <><small style={{ color: 'red' }}>{error}</small><br /></>}<br />
         {/*<FormControlLabel*/}
