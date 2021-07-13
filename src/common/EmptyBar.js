@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
     paddingTop: theme.spacing(0.7),
   },
   toolbarHeight: {
-    minHeight: 48
+    minHeight: 52
   },
 }));
 

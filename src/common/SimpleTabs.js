@@ -25,10 +25,18 @@ const useStyles = makeStyles((theme) => ({
 
 
 export default function SimpleTabs(props) {
-  const allTabs = ["/", "/login", "/dashboard", "/album", "/administration"];
+  const allTabs = ["/", "/login", "/dashboard", "/gallery", "/administration"];
   const classes = useStyles();
-  const [isAdmin, setIsAdmin] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(isAdminUser());
 
+
+  function checkPathname(pathname) {
+    if (allTabs.includes(pathname)) {
+      return pathname;
+    } else {
+      return false;
+    }
+  }
 
   // https://jasonwatmore.com/post/2019/02/01/
   //   react-role-based-authorization-tutorial-with-example
@@ -53,7 +61,7 @@ export default function SimpleTabs(props) {
                   root: classes.fullHeight,
                   indicator: classes.bigIndicator
                 }}
-                value={location.pathname}
+                value={checkPathname(location.pathname)}
               >
                 {/* HOME */}
                 <Tab
@@ -91,14 +99,14 @@ export default function SimpleTabs(props) {
                   component={Link}
                   to={allTabs[2]}
                 />
-                {/* ALBUM */}
+                {/* GALLERY */}
                 <Tab
                   classes={{
                     root: classes.fullHeight,
                     selected: classes.colorfulTabs,
                     // disabled: classes.colorfulTabs
                   }}
-                  label="Album"
+                  label="Gallery"
                   value={allTabs[3]}
                   component={Link}
                   to={allTabs[3]}

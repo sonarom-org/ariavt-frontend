@@ -197,7 +197,7 @@ export default function UploadFile(props) {
               component="label"
               onClick={handleCancel}
             >
-              Cancel
+              Reset
             </Button>
             <Button
               color="primary"
