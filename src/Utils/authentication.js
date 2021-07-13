@@ -31,7 +31,11 @@ export const setUserInfo = (userInfo) => {
 
 export const getUserInfo = () => {
   let userInfo = sessionStorage.getItem('userInfo');
-  if (userInfo) return JSON.parse(userInfo);
+  if (userInfo) {
+    let parsedUserInfo = JSON.parse(userInfo);
+    parsedUserInfo["fullName"] = parsedUserInfo["full_name"];
+    return parsedUserInfo;
+  }
   else return null;
 }
 

@@ -15,6 +15,8 @@ import axios from "axios";
 import config from "../config.json";
 import { getToken, isAdminUser } from "../Utils/authentication";
 import RemoveItemDialog from "./RemoveItemDialog";
+import EditIcon from '@material-ui/icons/Edit';
+import EditUser from "./EditUser";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -78,9 +80,12 @@ function Administration(props) {
   // Remove user dialog
   const [removeUser, setRemoveUser] = React.useState({
     showDialog: false,
+    showModal: false,
     username: null,
     userId: null,
   });
+  // Selected user
+  const [selectedUser, setSelectedUser] = useState(null);
 
 
   // ------------------------------------------------------------------
@@ -105,8 +110,10 @@ function Administration(props) {
         setUsers(users => ({
           ...users,
           [user.id]: {
+            id: user.id,
             fullName: user.full_name,
             username: user.username,
+            email: user.email,
             role: user.role,
           }
         }));
@@ -150,6 +157,7 @@ function Administration(props) {
 
   function handleRemoveUser(userId, username) {
     setRemoveUser({
+      showModal: false,
       showDialog: true,
       userId: userId,
       username: username
@@ -160,6 +168,17 @@ function Administration(props) {
     setRemoveUser({
       ...removeUser,
       showDialog: false
+    });
+  }
+
+  function handleEditFinished() {
+    doRefresh();
+  }
+
+  function handleCloseEditUser() {
+    setRemoveUser({
+      ...removeUser,
+      showModal: false
     });
   }
 
@@ -199,11 +218,18 @@ function Administration(props) {
   // -> Subcomponents
 
   function UserListItem(props) {
-    const userId = props.userId;
     const user = props.user;
 
     function handleRemove() {
-      handleRemoveUser(userId, user.username);
+      handleRemoveUser(user.id, user.username);
+    }
+
+    function handleEdit() {
+      setSelectedUser(user);
+      setRemoveUser({
+        ...removeUser,
+        showModal: true
+      });
     }
 
     return (
@@ -218,9 +244,12 @@ function Administration(props) {
           secondary={secondary ? user.role : null}
         />
         <ListItemSecondaryAction>
-          {/*<IconButton edge="end">*/}
-          {/*  <EditIcon />*/}
-          {/*</IconButton>*/}
+          <IconButton
+            edge="end"
+            onClick={handleEdit}
+          >
+            <EditIcon />
+          </IconButton>
           <IconButton
             edge="end"
             onClick={handleRemove}
@@ -249,13 +278,18 @@ function Administration(props) {
           handleAction={handleAddUser}
           FormComponent={<AddUserForm handleActionFinished={handleUserAdded} />}
         />
+        <EditUser
+          open={removeUser.showModal}
+          user={selectedUser}
+          handleClose={handleCloseEditUser}
+          handleActionFinished={handleEditFinished}
+        />
         <div className={classes.fullScreenCard}>
           <List dense={dense}>
             {
               Object.keys(users).map(userId => (
                 <UserListItem
                   key={userId}
-                  userId={userId}
                   user={users[userId]}
                 />
               ))

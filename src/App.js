@@ -8,10 +8,11 @@ import CssBaseline from "@material-ui/core/CssBaseline";
 import Login from './Login';
 import Dashboard from './Dashboard';
 import Home from './Home/Home';
-import Album from "./component/Album";
+import Gallery from "./component/Gallery";
 import NavigationBar from "./common/NavigationBar";
 import EmptyBar from "./common/EmptyBar";
 import Administration from "./component/Administration";
+import UserProfile from "./component/UserProfile";
 
 import PrivateRoute from './Utils/PrivateRoute';
 import PublicRoute from './Utils/PublicRoute';
@@ -48,8 +49,9 @@ export default function App() {
         <PrivateRoute exact path="/" component={Home} />
         {/*<PublicRoute path="/login" component={Login} />*/}
         <PrivateRoute path="/dashboard" component={Dashboard} />
-        <PrivateRoute path="/album" component={Album} />
+        <PrivateRoute path="/gallery" component={Gallery} />
         <PrivateRoute path="/administration" component={Administration} />
+        <PrivateRoute path="/profile" component={UserProfile} />
       </div>
       {/*<Footer />*/}
     </div>
@@ -124,7 +126,7 @@ export default function App() {
           <Switch>
             <Route exact path="/login" component={LoginContainer}/>
             <Route
-              exact path={["/", "/dashboard", "/album", "/administration"]}
+              exact path={["/", "/dashboard", "/gallery", "/administration", "/profile"]}
               component={DefaultContainer}
             />
             <Route component={NotFound} />

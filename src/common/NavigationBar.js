@@ -99,6 +99,7 @@ export default function NavigationBar(props) {
 
   function handleOpenDialog() {
     setOpenLogoutDialog(true);
+    handleMenuClose();
   }
 
   // handle click event of logout button
@@ -120,6 +121,11 @@ export default function NavigationBar(props) {
     handleMobileMenuClose();
   };
 
+  const handleOpenProfile = () => {
+    history.push('/profile');
+    handleMenuClose();
+  };
+
   const handleMobileMenuOpen = (event) => {
     setMobileMoreAnchorEl(event.currentTarget);
   };
@@ -135,7 +141,7 @@ export default function NavigationBar(props) {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-      <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
+      <MenuItem onClick={handleOpenProfile}>Profile</MenuItem>
       <MenuItem onClick={handleOpenDialog}>Logout</MenuItem>
     </Menu>
   );

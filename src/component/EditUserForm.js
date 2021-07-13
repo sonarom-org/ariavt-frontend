@@ -8,7 +8,6 @@ import Button from '@material-ui/core/Button';
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import FormControl from '@material-ui/core/FormControl';
 import {makeStyles} from "@material-ui/core/styles";
@@ -26,29 +25,30 @@ const useStyles = makeStyles((theme) => ({
 
 
 
-export default function AddUserForm(props) {
+export default function EditUserForm(props) {
   const classes = useStyles();
+  const user = props.user;
+  const adminEditor = props.adminEditor;
 
   const [state, setState] = useState({
-    // Initially, no file is selected
-    username: '',
-    fullName: '',
-    email: '',
-    password: '',
-    role: ''
+    // Initial state
+    fullName: user.fullName,
+    email: user.email,
+    oldPassword: '',
+    newPassword: '',
+    username: user.username,
+    role: user.role,
   });
   const [message, setMessage] = useState('')
 
   function allRequiredFilled() {
     return (
-      !state.username
-      || !state.fullName
+      !state.fullName
       || !state.email
-      || !state.password
+      || !state.username
       || !state.role
     )
   }
-
 
   // General function to update the state of the different form input fields
   function onInputChange(field) {
@@ -58,18 +58,8 @@ export default function AddUserForm(props) {
     }
   }
 
-
   // On file upload (click the upload button)
   const onFileUpload = () => {
-    // Create an object of formData
-    const formData = new FormData();
-
-    // -> Update the formData object
-    formData.append("username", state.username);
-    formData.append("full_name", state.fullName);
-    formData.append("email", state.email);
-    formData.append("password", state.password);
-    formData.append("role", state.role);
 
     // Request made to the backend api
     // Send formData object
@@ -77,8 +67,20 @@ export default function AddUserForm(props) {
     if (!token) {
       return;
     }
-    return axios.post(
-      config.API_URL + "/users/",
+
+    // Create an object of formData
+    const formData = new FormData();
+
+    // -> Update the formData object
+    formData.append("full_name", state.fullName);
+    formData.append("email", state.email);
+    formData.append("password", state.newPassword);
+    if (!adminEditor)
+      formData.append("old_password", state.oldPassword);
+    formData.append("role", state.role);
+
+    return axios.put(
+      config.API_URL + "/users/" + user.id,
       formData,
       {
         headers: {
@@ -92,7 +94,7 @@ export default function AddUserForm(props) {
       // setAuthLoading(false);
       console.log(response);
       if (response.status === 200) {
-        setMessage("User correctly added");
+        setMessage("User correctly updated!");
       }
       props.handleActionFinished();
     }).catch(error => {
@@ -104,20 +106,37 @@ export default function AddUserForm(props) {
   function handleCancel() {
     setState({
       // Initial state
-      username: '',
-      fullName: '',
-      email: '',
-      password: '',
-      role: ''
+      fullName: user.fullName,
+      email: user.email,
+      oldPassword: '',
+      newPassword: '',
+      username: user.username,
+      role: user.role,
     });
     setMessage('');
   }
 
   return (
     <div>
-      <h2>
-        Add user
-      </h2>
+      <Grid
+        container
+        direction="row"
+        justify="space-between"
+        alignItems="center"
+      >
+        <h2>
+          {props.title}
+        </h2>
+        {/*<Button*/}
+        {/*  color="default"*/}
+        {/*  // disabled={allRequiredFilled()}*/}
+        {/*  variant="contained"*/}
+        {/*  component="label"*/}
+        {/*  onClick={onFileUpload}*/}
+        {/*>*/}
+        {/*  Close*/}
+        {/*</Button>*/}
+      </Grid>
       <div>
 
         {/* Email */}
@@ -129,10 +148,9 @@ export default function AddUserForm(props) {
           label="Email"
           name="email"
           autoComplete="email"
-          required
-          // autoFocus
+          // required
           onChange={onInputChange('email')}
-          value={state.title}
+          value={state.email}
         />
 
         {/* Full name */}
@@ -143,12 +161,43 @@ export default function AddUserForm(props) {
           id="fullName"
           label="Full name"
           name="fullName"
-          required
+          // required
           onChange={onInputChange('fullName')}
           value={state.fullName}
         />
 
-        {/* Username */}
+        {/* Old password */}
+        {!adminEditor &&
+        <TextField
+          variant="outlined"
+          margin="normal"
+          fullWidth
+          id="old-password"
+          label="Old password"
+          name="old-password"
+          autoComplete="current-password"
+          // required
+          type="password"
+          onChange={onInputChange('oldPassword')}
+          value={state.oldPassword}
+        />}
+
+        {/* Password */}
+        <TextField
+          variant="outlined"
+          margin="normal"
+          fullWidth
+          id="new-password"
+          label="New password"
+          name="newPassword"
+          autoComplete="current-password"
+          // required
+          type="password"
+          onChange={onInputChange('newPassword')}
+          value={state.newPassword}
+        />
+
+        {/* USERNAME */}
         <TextField
           variant="outlined"
           margin="normal"
@@ -157,46 +206,27 @@ export default function AddUserForm(props) {
           label="Username"
           name="username"
           autoComplete="username"
-          required
-          onChange={onInputChange('username')}
+          disabled={!adminEditor}
           value={state.username}
-        />
-
-        {/* Password */}
-        <TextField
-          variant="outlined"
-          margin="normal"
-          fullWidth
-          id="password"
-          label="Password"
-          name="password"
-          autoComplete="current-password"
-          required
-          type="password"
-          onChange={onInputChange('password')}
-          value={state.password}
         />
 
         <FormControl
           variant="outlined"
           margin="normal"
           className={classes.formControl}
-          required
+          disabled
         >
-          <InputLabel id="demo-simple-select-outlined-label">Role</InputLabel>
+          <InputLabel id="role-label">Role</InputLabel>
           <Select
-            labelId="demo-simple-select-outlined-label"
-            id="demo-simple-select-outlined"
+            native
+            labelId="role-label"
+            id="role"
             value={state.role}
-            onChange={onInputChange('role')}
-            label="Age"
+            label="Role"
+            disabled={!adminEditor}
             autoWidth
           >
-            <MenuItem value="">
-              <em>None</em>
-            </MenuItem>
-            <MenuItem value={"admin"}>Admin</MenuItem>
-            <MenuItem value={"user"}>User</MenuItem>
+            <option value={"admin"}>{state.role}</option>
           </Select>
         </FormControl>
 
@@ -221,7 +251,7 @@ export default function AddUserForm(props) {
               component="label"
               onClick={onFileUpload}
             >
-              Upload
+              Update
             </Button>
           </Grid>
         </ Box>
