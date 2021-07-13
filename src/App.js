@@ -1,6 +1,9 @@
+import axios from 'axios';
+
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
-import axios from 'axios';
+
+import CssBaseline from "@material-ui/core/CssBaseline";
 
 import Login from './Login';
 import Dashboard from './Dashboard';
@@ -12,18 +15,21 @@ import Administration from "./component/Administration";
 
 import PrivateRoute from './Utils/PrivateRoute';
 import PublicRoute from './Utils/PublicRoute';
-import {getToken, getUserRole, removeUserSession, setUserInfo, setUserSession} from './Utils/authentication';
+import {
+  getToken,
+  removeUserSession,
+  setUserInfo,
+  setUserSession
+} from './Utils/authentication';
 
 import config from "./config.json";
-import CssBaseline from "@material-ui/core/CssBaseline";
 import {SimpleIDB} from "./common/SimpleIDB";
 
 
-function App() {
-  const [authLoading, setAuthLoading] = useState(true);
-  const [isAdmin, setIsAdmin] = useState(null);
 
-  console.log('App() isAdmin', isAdmin);
+export default function App() {
+  // -> State
+  const [authLoading, setAuthLoading] = useState(true);
 
   // ------------------------------------------------------------------
   // -> Subcomponents
@@ -43,8 +49,7 @@ function App() {
         {/*<PublicRoute path="/login" component={Login} />*/}
         <PrivateRoute path="/dashboard" component={Dashboard} />
         <PrivateRoute path="/album" component={Album} />
-        {/*https://jasonwatmore.com/post/2019/02/01/react-role-based-authorization-tutorial-with-example*/}
-        {isAdmin && <PrivateRoute path="/administration" component={Administration} />}
+        <PrivateRoute path="/administration" component={Administration} />
       </div>
       {/*<Footer />*/}
     </div>
@@ -58,15 +63,6 @@ function App() {
     </div>
   );
 
-
-  const isAdminUser = () => {
-    const role = getUserRole();
-    if (role) {
-      return role === 'admin';
-    } else {
-      return null;
-    }
-  }
 
   // ------------------------------------------------------------------
 
@@ -98,7 +94,6 @@ function App() {
         }
       ).then(response => {
         setUserInfo(response.data);
-        setIsAdmin(isAdminUser());
         setAuthLoading(false);
       }).catch(error => {
         if (error.response.status === 401) {
@@ -113,15 +108,13 @@ function App() {
       setAuthLoading(false);
     });
 
-    setIsAdmin(isAdminUser());
-
   }, []);
 
-  if (authLoading && getToken()) {
-    return <div className="content">Checking Authentication...</div>
-  }
-
   // ------------------------------------------------------------------
+
+  if (authLoading && getToken()) {
+    return <div className="content">Checking authentication...</div>
+  }
 
   return (
     <div className="App">
@@ -131,11 +124,7 @@ function App() {
           <Switch>
             <Route exact path="/login" component={LoginContainer}/>
             <Route
-              exact path={
-                isAdmin ?
-                ["/", "/dashboard", "/album", "/administration"] :
-                ["/", "/dashboard", "/album"]
-              }
+              exact path={["/", "/dashboard", "/album", "/administration"]}
               component={DefaultContainer}
             />
             <Route component={NotFound} />
@@ -145,6 +134,3 @@ function App() {
     </div>
   );
 }
-
-
-export default App;
