@@ -3,10 +3,7 @@ import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import {Route, Link} from "react-router-dom";
 import {makeStyles} from "@material-ui/core/styles";
-import {SimpleIDB} from "./SimpleIDB";
-import {getToken, getUserRole, removeUserSession, setUserSession} from "../Utils/authentication";
-import axios from "axios";
-import config from "../config.json";
+import { isAdminUser } from "../Utils/authentication";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -32,17 +29,9 @@ export default function SimpleTabs(props) {
   const classes = useStyles();
   const [isAdmin, setIsAdmin] = useState(null);
 
-  const isAdminUser = () => {
-    const role = getUserRole();
-    if (role) {
-      if (role === 'admin')
-        return true;
-      else
-        return null;
-    } else {
-      return null;
-    }
-  }
+
+  // https://jasonwatmore.com/post/2019/02/01/
+  //   react-role-based-authorization-tutorial-with-example
 
   useEffect(() => {
 

@@ -1,3 +1,4 @@
+
 // return the user data from the session storage
 export const getUser = () => {
   const userStr = sessionStorage.getItem('user');
@@ -42,4 +43,16 @@ export const getUserRole = () => {
   let userInfo = sessionStorage.getItem('userInfo');
   if (userInfo) return JSON.parse(userInfo).role;
   else return null;
+}
+
+export const isAdminUser = () => {
+  const role = getUserRole();
+  if (role) {
+    if (role === 'admin')
+      return true;
+    else
+      return null;
+  } else {
+    return null;
+  }
 }
