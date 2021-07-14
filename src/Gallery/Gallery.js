@@ -9,13 +9,15 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
-import {getToken} from "../Utils/authentication";
+import {getToken} from "../authentication/authentication";
 import axios from "axios";
 import config from "../config.json";
-import {Footer, TypographyTitle} from "../CommonUI";
-import UploadFile from "./UploadFile";
+import {Footer, TypographyTitle} from "../common/CommonUI";
+import AddImageForm from "./AddImageForm";
 import {SimpleIDB} from "../common/SimpleIDB";
-import RemoveItemDialog from "./RemoveItemDialog";
+import RemoveItemDialog from "../common/RemoveItemDialog";
+import './ImageView.css';
+import ImageView from "./ImageView";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -47,7 +49,7 @@ const useStyles = makeStyles((theme) => ({
   fullHeight: {
     // - <app bar height>
     minHeight: 'calc(100vh - 48px)'
-  }
+  },
 }));
 
 
@@ -71,7 +73,12 @@ export default function Gallery() {
   });
   // Refresh gallery
   const [refresh, setRefresh] = useState(false);
-
+  // Selected image
+  const [imageView, setImageView] = useState({
+    show: false,
+    image: null,
+    id: null
+  });
 
   // ------------------------------------------------------------------
   // -> Database operations
@@ -84,7 +91,7 @@ export default function Gallery() {
   }
 
   function getObject (id) {
-    return SimpleIDB.get(id);
+    return SimpleIDB.get(parseInt(id));
   }
 
   function removeObject (id) {
@@ -98,6 +105,13 @@ export default function Gallery() {
 
   // ------------------------------------------------------------------
   // -> Handlers
+
+  function handleBack() {
+    setImageView({
+      ...imageView,
+      show: false
+    });
+  }
 
   function handleRemoveImage(imageID, imageName) {
     setRemoveImage({
@@ -174,7 +188,7 @@ export default function Gallery() {
 
 
   // ------------------------------------------------------------------
-  // -> Utils
+  // -> routes
 
   function doRefresh() {
     setRefresh(!refresh);
@@ -190,10 +204,11 @@ export default function Gallery() {
       console.log('>>>>>>>', id);
       getObject(id).then(object => {
         if (object) {
-          console.log('>>>>>>>>>>>>>>> LOCAL');
+          console.log('>>>>>>>>>>>>>>> LOCAL ' + id.toString());
           setImages(images => ({
             ...images,
             [id]: {
+              id: id,
               format: "png",
               image: URL.createObjectURL(object.image),
               info: {
@@ -251,6 +266,7 @@ export default function Gallery() {
             setImages(images => ({
               ...images,
               [id]: {
+                id: id,
                 format: "png",
                 image: image_url,
                 info: {
@@ -326,6 +342,22 @@ export default function Gallery() {
       handleRemoveImage(imageID, image.info.title);
     }
 
+    function handleView() {
+      console.log(imageID);
+      getObject(imageID).then(object => {
+        if (object) {
+          setImageView({
+            show: true,
+            id: imageID,
+            image: image
+          });
+        } else {
+          // Error: NO IMAGE
+          console.log(`Image ${imageID} not found.`)
+        }
+      });
+    }
+
     console.log('KEY AND IMAGES', imageID, image);
 
     return (
@@ -345,7 +377,7 @@ export default function Gallery() {
           </Typography>
         </CardContent>
         <CardActions>
-          <Button size="small" color="primary">
+          <Button size="small" color="primary" onClick={handleView}>
             View
           </Button>
           <Button
@@ -361,9 +393,7 @@ export default function Gallery() {
   }
 
 
-  // ------------------------------------------------------------------
-
-  return (
+  const GallerySC = () => (
     <React.Fragment>
       {/*<CssBaseline />*/}
       <main className={classes.fullHeight}>
@@ -382,10 +412,10 @@ export default function Gallery() {
                     color={ showUploadForm ? "default" : "primary" }
                     onClick={handleUploadImage}
                   >
-                    { showUploadForm ? "Close" : "Upload image" }
+                    { showUploadForm ? "Close" : "Add image" }
                   </Button>
                 </Grid>
-                { showUploadForm ? <UploadFile handleUploaded={handleUploaded} /> : null }
+                { showUploadForm ? <AddImageForm handleUploaded={handleUploaded} /> : null }
               </Grid>
             </div>
           </Container>
@@ -416,6 +446,21 @@ export default function Gallery() {
         itemType="image"
       />
     </React.Fragment>
+  );
+
+
+  // ------------------------------------------------------------------
+
+  return (
+    <div>
+      {!imageView.show && <GallerySC />}
+      {imageView.show &&
+       <ImageView
+         image={imageView.image}
+         handleBack={handleBack}
+       />
+      }
+    </div>
   );
 }
 

@@ -9,12 +9,12 @@ import Avatar from '@material-ui/core/Avatar';
 import IconButton from '@material-ui/core/IconButton';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import DeleteIcon from '@material-ui/icons/Delete';
-import {Footer, SectionActionTitle} from "../CommonUI";
+import {Footer, SectionActionTitle} from "../common/CommonUI";
 import AddUserForm from "./AddUserForm";
 import axios from "axios";
 import config from "../config.json";
-import { getToken, isAdminUser } from "../Utils/authentication";
-import RemoveItemDialog from "./RemoveItemDialog";
+import { getToken, isAdminUser } from "../authentication/authentication";
+import RemoveItemDialog from "../common/RemoveItemDialog";
 import EditIcon from '@material-ui/icons/Edit';
 import EditUser from "./EditUser";
 
@@ -135,7 +135,7 @@ function Administration(props) {
 
 
   // ------------------------------------------------------------------
-  // -> Utils
+  // -> routes
 
   function doRefresh() {
     setRefresh(!refresh);

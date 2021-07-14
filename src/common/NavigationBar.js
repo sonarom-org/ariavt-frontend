@@ -9,7 +9,7 @@ import Menu from '@material-ui/core/Menu';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import MoreIcon from '@material-ui/icons/MoreVert';
 import SimpleTabs from "./SimpleTabs";
-import {removeUserSession} from "../Utils/authentication";
+import {removeUserSession} from "../authentication/authentication";
 import { useHistory } from 'react-router-dom';
 import Dialog from "@material-ui/core/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle";

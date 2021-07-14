@@ -3,7 +3,7 @@ import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import {Route, Link} from "react-router-dom";
 import {makeStyles} from "@material-ui/core/styles";
-import { isAdminUser } from "../Utils/authentication";
+import { isAdminUser } from "../authentication/authentication";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -26,12 +26,13 @@ const useStyles = makeStyles((theme) => ({
 
 export default function SimpleTabs(props) {
   const allTabs = ["/", "/login", "/dashboard", "/gallery", "/administration"];
+  const validTabs = ["/", "/login", "/gallery", "/administration"];
   const classes = useStyles();
   const [isAdmin, setIsAdmin] = useState(isAdminUser());
 
 
   function checkPathname(pathname) {
-    if (allTabs.includes(pathname)) {
+    if (validTabs.includes(pathname)) {
       return pathname;
     } else {
       return false;
@@ -84,21 +85,21 @@ export default function SimpleTabs(props) {
                 {/*  }}*/}
                 {/*  label="Login"*/}
                 {/*  value={allTabs[1]}*/}
-                {/*  component={Link}*/}
+                {/*  Gallery={Link}*/}
                 {/*  to={allTabs[1]}*/}
                 {/*/>*/}
                 {/* DASHBOARD */}
-                <Tab
-                  classes={{
-                    root: classes.fullHeight,
-                    selected: classes.colorfulTabs,
-                    // disabled: classes.colorfulTabs
-                  }}
-                  label="Dashboard"
-                  value={allTabs[2]}
-                  component={Link}
-                  to={allTabs[2]}
-                />
+                {/*<Tab*/}
+                {/*  classes={{*/}
+                {/*    root: classes.fullHeight,*/}
+                {/*    selected: classes.colorfulTabs,*/}
+                {/*    // disabled: classes.colorfulTabs*/}
+                {/*  }}*/}
+                {/*  label="Dashboard"*/}
+                {/*  value={allTabs[2]}*/}
+                {/*  Gallery={Link}*/}
+                {/*  to={allTabs[2]}*/}
+                {/*/>*/}
                 {/* GALLERY */}
                 <Tab
                   classes={{

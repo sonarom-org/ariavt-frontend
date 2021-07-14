@@ -5,23 +5,22 @@ import { BrowserRouter, Switch, Route } from 'react-router-dom';
 
 import CssBaseline from "@material-ui/core/CssBaseline";
 
-import Login from './Login';
-import Dashboard from './Dashboard';
+import Login from './authentication/Login';
 import Home from './Home/Home';
-import Gallery from "./component/Gallery";
+import Gallery from "./Gallery/Gallery";
 import NavigationBar from "./common/NavigationBar";
 import EmptyBar from "./common/EmptyBar";
-import Administration from "./component/Administration";
-import UserProfile from "./component/UserProfile";
+import Administration from "./Administration/Administration";
+import UserProfile from "./Administration/UserProfile";
 
-import PrivateRoute from './Utils/PrivateRoute';
-import PublicRoute from './Utils/PublicRoute';
+import PrivateRoute from './routes/PrivateRoute';
+import PublicRoute from './routes/PublicRoute';
 import {
   getToken,
   removeUserSession,
   setUserInfo,
   setUserSession
-} from './Utils/authentication';
+} from './authentication/authentication';
 
 import config from "./config.json";
 import {SimpleIDB} from "./common/SimpleIDB";
@@ -47,8 +46,8 @@ export default function App() {
       <div className="container">
         <NavigationBar />
         <PrivateRoute exact path="/" component={Home} />
-        {/*<PublicRoute path="/login" component={Login} />*/}
-        <PrivateRoute path="/dashboard" component={Dashboard} />
+        {/*<PublicRoute path="/login" Gallery={Login} />*/}
+        {/*<PrivateRoute path="/dashboard" Gallery={Dashboard} />*/}
         <PrivateRoute path="/gallery" component={Gallery} />
         <PrivateRoute path="/administration" component={Administration} />
         <PrivateRoute path="/profile" component={UserProfile} />
@@ -126,7 +125,8 @@ export default function App() {
           <Switch>
             <Route exact path="/login" component={LoginContainer}/>
             <Route
-              exact path={["/", "/dashboard", "/gallery", "/administration", "/profile"]}
+              // exact path={["/", "/dashboard", "/gallery", "/administration", "/profile"]}
+              exact path={["/", "/gallery", "/administration", "/profile"]}
               component={DefaultContainer}
             />
             <Route component={NotFound} />

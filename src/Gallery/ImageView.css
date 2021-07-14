@@ -1,0 +1,14 @@
+
+
+.dashboardContent {
+    margin: 40px 20px 20px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+@media screen and (max-width: 600px) {
+    .dashboardContent {
+        flex-direction: column;
+    }
+}

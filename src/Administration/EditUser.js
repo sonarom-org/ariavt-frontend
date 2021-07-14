@@ -13,7 +13,7 @@ import Typography from '@material-ui/core/Typography';
 import CloseIcon from '@material-ui/icons/Close';
 import Slide from '@material-ui/core/Slide';
 import EditUserForm from "./EditUserForm";
-import {isAdminUser} from "../Utils/authentication";
+import {isAdminUser} from "../authentication/authentication";
 
 const useStyles = makeStyles((theme) => ({
   appBar: {

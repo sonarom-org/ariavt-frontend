@@ -1,6 +1,6 @@
 import React, {useEffect} from 'react'
 import ReactMarkdown from 'react-markdown'
-import {Footer, SectionTitle} from "../CommonUI";
+import {Footer, SectionTitle} from "../common/CommonUI";
 
 import './Home.css';
 
