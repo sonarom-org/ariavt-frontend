@@ -7,8 +7,15 @@ import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import {Paper} from "@material-ui/core";
 import {Footer} from "../common/CommonUI";
+import {getToken} from "../authentication/authentication";
+import axios from "axios";
+import config from "../config.json";
+import {SimpleIDB} from "../common/SimpleIDB";
 
 const useStyles = makeStyles((theme) => ({
+  textMessage: {
+    fontSize: "large"
+  },
   analysis: {
     maxWidth: '100%',
     borderRadius: 6,
@@ -43,7 +50,10 @@ const useStyles = makeStyles((theme) => ({
 export default function ImageView (props) {
   // TODO: back button, update button
 
+  // Styles
   const classes = useStyles();
+  // State
+  const [message, setMessage] = useState('')
   const [state, setState] = useState({
     // Initial state
     title: props.image.info.title,
@@ -62,6 +72,83 @@ export default function ImageView (props) {
     });
   }
 
+  // ------------------------------------------------------------------
+  // -> Database operations
+
+  function insertObject (id, image) {
+    try {
+      SimpleIDB.set(id, image).then();
+    } catch(e) {
+    }
+  }
+
+  function removeObject (id) {
+    try {
+      SimpleIDB.remove(id).then(response => {
+        console.log('DELETED FROM DB');
+      });
+    } catch(e) {
+    }
+  }
+
+  // On file upload (click the upload button)
+  const handleUpdate = () => {
+
+    // Request made to the backend api
+    // Send formData object
+    const token = getToken();
+    if (!token) {
+      return;
+    }
+
+    // Create an object of formData
+    const formData = new FormData();
+
+
+    let title = state.title ? state.title : '';
+    let text = state.text ? state.text : '';
+
+    // -> Update the formData object
+    formData.append("title", title);
+    formData.append("text", text);
+
+    // const image = {
+    //   format: "png",
+    //   image: props.image.image,
+    //   info: {
+    //     title: state.title,
+    //     text: state.text
+    //   }
+    // };
+    //
+    // insertObject(props.image.id, image);
+    removeObject(props.image.id);
+
+    return axios.put(
+        config.API_URL + "/images/" + props.image.id,
+        formData,
+        {
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+            "accept": "application/json"
+          }
+        }
+    ).then(response => {
+      // setUserSession(response.data.token, response.data.user);
+      // setAuthLoading(false);
+      console.log(response);
+      if (response.status === 200) {
+        setMessage("Image information correctly updated!");
+      }
+      // Refresh gallery
+      props.doRefresh();
+      props.handleActionFinished();
+    }).catch(error => {
+      // removeUserSession();
+      // setAuthLoading(false);
+    });
+  };
 
   const openInNewTab = () => {
     // SimpleIDB.get(props.image.id).then(object => {
@@ -109,7 +196,10 @@ export default function ImageView (props) {
                     direction="row"
                     justify="space-between"
                     alignItems="center">
-                    <Typography component="h5" variant="h6" align="center" color="textPrimary" gutterBottom>
+                    <Typography
+                        component="h5" variant="h6" align="center"
+                        color="textPrimary" gutterBottom
+                    >
                       Original retinography
                     </Typography>
                     <Button
@@ -225,12 +315,19 @@ export default function ImageView (props) {
                     disabled={allRequiredFilled()}
                     variant="contained"
                     component="label"
-                    // TODO: file update
-                    onClick={() => {}}
+                    onClick={handleUpdate}
                   >
                     Update
                   </Button>
+
                 </Grid>
+
+                <div className={classes.textMessage}>
+                  <Box pt={4}>
+                    {message}
+                  </ Box>
+                </div>
+
               </ Box>
 
             </div>

@@ -458,6 +458,7 @@ export default function Gallery() {
        <ImageView
          image={imageView.image}
          handleBack={handleBack}
+         doRefresh={doRefresh}
        />
       }
     </div>
