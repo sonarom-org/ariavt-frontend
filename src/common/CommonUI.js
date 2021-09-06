@@ -46,7 +46,7 @@ export function Footer() {
       <Typography variant="h6" align="center" gutterBottom>
         ARIAVT
       </Typography>
-      {/*<Typography variant="subtitle1" align="center" color="textSecondary" component="p">*/}
+      {/*<Typography variant="subtitle1" align="center" color="textSecondary" Gallery="p">*/}
       {/*  Something here to give the footer a purpose!*/}
       {/*</Typography>*/}
       <Copyright />

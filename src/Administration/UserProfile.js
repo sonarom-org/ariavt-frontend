@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import {Footer, SectionTitle} from "../CommonUI";
-import {getUserInfo, isAdminUser} from "../Utils/authentication";
+import {Footer, SectionTitle} from "../common/CommonUI";
+import {getUserInfo, isAdminUser} from "../authentication/authentication";
 import EditUser from "./EditUser";
 import EditUserForm from "./EditUserForm";
 
@@ -22,9 +22,6 @@ export default function UserProfile(props) {
   // -> Styles
   const classes = useStyles();
   // -> States
-  // Refresh user list
-  const [refresh, setRefresh] = useState(false);
-  const [showModal, setShowModal] = useState(false);
   const [userInfo, setUserInfo] = useState(getUserInfo());
 
 
@@ -32,28 +29,11 @@ export default function UserProfile(props) {
 
   useEffect(() => {
     setUserInfo(getUserInfo());
-  }, [refresh]);
+  }, []);
 
-
-  // ------------------------------------------------------------------
-  // -> Utils
-
-  function doRefresh() {
-    setRefresh(!refresh);
-    console.log('REFRESHED');
-  }
 
 
   // ------------------------------------------------------------------
-  // -> Handlers
-
-  function handleEditFinished() {
-    doRefresh();
-  }
-
-  function handleCloseEditUser() {
-    setShowModal(false);
-  }
 
   return (
     <div>

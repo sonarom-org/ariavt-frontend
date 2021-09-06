@@ -23,6 +23,7 @@ export const SimpleIDB = {
 
   get(key) {
     return new Promise((resolve, reject) => {
+      key = parseInt(key);
       let oRequest = indexedDB.open('myDatabase');
       oRequest.onsuccess = function() {
         let db = oRequest.result;
@@ -44,6 +45,7 @@ export const SimpleIDB = {
 
   set(key, value) {
     return new Promise((resolve, reject) => {
+      key = parseInt(key);
       let oRequest = indexedDB.open('myDatabase');
       oRequest.onsuccess = function() {
         let db = oRequest.result;
@@ -65,6 +67,7 @@ export const SimpleIDB = {
 
   remove(key) {
     return new Promise((resolve, reject) => {
+      key = parseInt(key);
       let oRequest = indexedDB.open('myDatabase');
       oRequest.onsuccess = function() {
         let db = oRequest.result;

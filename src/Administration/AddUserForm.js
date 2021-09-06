@@ -2,7 +2,7 @@ import axios from 'axios';
 import React, {useState} from 'react';
 
 import config from "../config.json";
-import {getToken} from "../Utils/authentication";
+import {getToken} from "../authentication/authentication";
 import TextField from "@material-ui/core/TextField";
 import Button from '@material-ui/core/Button';
 import Box from '@material-ui/core/Box';

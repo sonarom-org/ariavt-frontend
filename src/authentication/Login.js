@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { setUserSession, setUserInfo } from './Utils/authentication';
-import config from "./config.json";
+import { setUserSession, setUserInfo } from './authentication';
+import config from "../config.json";
 import Container from "@material-ui/core/Container";
 import Avatar from "@material-ui/core/Avatar";
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
@@ -10,7 +10,7 @@ import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import Box from "@material-ui/core/Box";
 import {makeStyles} from "@material-ui/core/styles";
-import {Copyright} from "./CommonUI";
+import {Copyright} from "../common/CommonUI";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -67,7 +67,7 @@ function Login(props) {
       ).then(response => {
         setUserInfo(response.data);
         // Push /dashboard after retrieving all the necessary user data
-        props.history.push('/dashboard');
+        props.history.push('/');
       }).catch(error => {
         if (error.response.status === 401) {
           setError(error.response.data.message);
