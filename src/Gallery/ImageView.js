@@ -11,6 +11,8 @@ import {getToken} from "../authentication/authentication";
 import axios from "axios";
 import config from "../config.json";
 import {SimpleIDB} from "../common/SimpleIDB";
+import {Label} from "@material-ui/icons";
+
 
 const useStyles = makeStyles((theme) => ({
   textMessage: {
@@ -47,18 +49,68 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-export default function ImageView (props) {
-  // TODO: back button, update button
+function ImageAnalysisCard(props) {
+  const classes = useStyles();
 
+  let message;
+  let image;
+  if (!props.image) {
+    message = "Generate results";
+    image = <></>
+  } else {
+    message = "Open image";
+    image = <img
+        alt='analysis'
+        className={classes.analysis}
+        src={props.image.image}
+    />;
+  }
+
+  return (
+    <Paper elevation={3} className={classes.imagePaper}>
+      <Box textAlign='center'>
+        {image}
+
+        <Box pt={1}>
+          <Grid
+              container
+              direction="row"
+              justify="space-between"
+              alignItems="center">
+            <Typography
+                component="h5"
+                variant="h6"
+                align="center"
+                color="textPrimary"
+                gutterBottom
+            >
+              {props.title}
+            </Typography>
+            <Button
+                variant="contained"
+                color="primary"
+                onClick={props.onClickButton}
+            >
+              {message}
+            </Button>
+          </Grid>
+        </Box>
+      </Box>
+    </Paper>
+  );
+}
+
+export default function ImageView (props) {
   // Styles
   const classes = useStyles();
   // State
-  const [message, setMessage] = useState('')
+  const [message, setMessage] = useState('');
   const [state, setState] = useState({
     // Initial state
     title: props.image.info.title,
     text: props.image.info.text
   });
+  const [title, setTitle] = useState(props.image.info.title);
 
   function allRequiredFilled() {
     return (!state.title)
@@ -141,6 +193,7 @@ export default function ImageView (props) {
       if (response.status === 200) {
         setMessage("Image information correctly updated!");
       }
+      setTitle(state.title);
       // Refresh gallery
       props.doRefresh();
       props.handleActionFinished();
@@ -174,96 +227,42 @@ export default function ImageView (props) {
   return (
     <React.Fragment>
       <div className={classes.fullContent}>
-        <Button
-          variant="contained"
-          color="default"
-          onClick={props.handleBack}
-        >
-          Back
-        </Button>
+        <div style={{
+          display: 'flex', justifyContent: 'space-between', alignItems: 'center'
+        }}>
+          <Button
+              variant="contained"
+              color="default"
+              onClick={props.handleBack}
+          >
+            Back
+          </Button>
+          <Typography variant={'h5'}>
+            Image <b>{title}</b>
+          </Typography>
+          <div />
+        </div>
+
         <div className={"dashboardContent"}>
           <div className={classes.columnImage}>
-            <Paper elevation={3} className={classes.imagePaper}>
-              <Box textAlign='center'>
-                <img
-                  alt='analysis'
-                  className={classes.analysis}
-                  src={props.image.image}
-                />
-                <Box pt={1}>
-                  <Grid
-                    container
-                    direction="row"
-                    justify="space-between"
-                    alignItems="center">
-                    <Typography
-                        component="h5" variant="h6" align="center"
-                        color="textPrimary" gutterBottom
-                    >
-                      Original retinography
-                    </Typography>
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      onClick={openInNewTab}
-                    >
-                      Open image
-                    </Button>
-                  </Grid>
-                </Box>
-              </Box>
-            </Paper>
 
-            <Paper elevation={3} className={classes.imagePaper}>
-              <Box textAlign='center'>
-                <img
-                  alt='analysis'
-                  className={classes.analysis}
-                  src={props.image.image}
-                />
-                <Box pt={1}>
-                  <Grid
-                    container
-                    direction="row"
-                    justify="space-between"
-                    alignItems="center">
-                    <Typography component="h5" variant="h6" align="center" color="textPrimary" gutterBottom>
-                      Vascular segmentation
-                    </Typography>
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      onClick={openInNewTab}
-                    >
-                      Open image
-                    </Button>
-                  </Grid>
-                </Box>
-              </Box>
-            </Paper>
+            <ImageAnalysisCard
+                onClickButton={openInNewTab}
+                image={props.image}
+                title={"Original retinography"}
+            />
 
-            <Paper elevation={3} className={classes.imagePaper}>
-              <Box textAlign='center'>
-                <Box pt={1}>
-                  <Grid
-                    container
-                    direction="row"
-                    justify="space-between"
-                    alignItems="center">
-                    <Typography component="h5" variant="h6" align="center" color="textPrimary" gutterBottom>
-                      Artery/Vein segmentation
-                    </Typography>
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      onClick={openInNewTab}
-                    >
-                      Generate results
-                    </Button>
-                  </Grid>
-                </Box>
-              </Box>
-            </Paper>
+            <ImageAnalysisCard
+                onClickButton={openInNewTab}
+                image={props.image}
+                title={"Vascular segmentation"}
+            />
+
+            <ImageAnalysisCard
+                onClickButton={openInNewTab}
+                title={"Artery/Vein segmentation"}
+            />
+
           </div>
 
           <div className={classes.column}>
@@ -290,8 +289,8 @@ export default function ImageView (props) {
                 label="Notes"
                 name="text"
                 multiline
-                rows={8}
-                rowsMax={12}
+                rows={16}
+                rowsMax={20}
                 onChange={onInputChange("text")}
                 value={state.text}
               />
