@@ -45,10 +45,10 @@ export default function App() {
     <div>
       <div className="container">
         <NavigationBar />
-        <PrivateRoute exact path="/" component={Home} />
+        <PrivateRoute exact path="/" component={Gallery} />
         {/*<PublicRoute path="/login" Gallery={Login} />*/}
         {/*<PrivateRoute path="/dashboard" Gallery={Dashboard} />*/}
-        <PrivateRoute path="/gallery" component={Gallery} />
+        <PrivateRoute path="/docs" component={Home} />
         <PrivateRoute path="/administration" component={Administration} />
         <PrivateRoute path="/profile" component={UserProfile} />
       </div>
@@ -125,8 +125,8 @@ export default function App() {
           <Switch>
             <Route exact path="/login" component={LoginContainer}/>
             <Route
-              // exact path={["/", "/dashboard", "/gallery", "/administration", "/profile"]}
-              exact path={["/", "/gallery", "/administration", "/profile"]}
+              // exact path={["/", "/dashboard", "/docs", "/administration", "/profile"]}
+              exact path={["/", "/docs", "/administration", "/profile"]}
               component={DefaultContainer}
             />
             <Route component={NotFound} />
