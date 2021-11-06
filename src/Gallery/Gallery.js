@@ -209,7 +209,7 @@ export default function Gallery() {
             ...images,
             [id]: {
               id: id,
-              format: "png",
+              // format: "png",
               image: URL.createObjectURL(object.image),
               info: {
                 title: object.info.title,
@@ -267,7 +267,7 @@ export default function Gallery() {
               ...images,
               [id]: {
                 id: id,
-                format: "png",
+                // format: "png",
                 image: image_url,
                 info: {
                   title: responseData.data[0].title,
@@ -276,7 +276,7 @@ export default function Gallery() {
               }
             }));
             const image = {
-              format: "png",
+              // format: "png",
               image: blob,
               info: {
                 title: responseData.data[0].title,
