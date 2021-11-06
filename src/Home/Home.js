@@ -1,10 +1,12 @@
 import React, {useEffect} from 'react'
 import ReactMarkdown from 'react-markdown'
 import {Footer, SectionTitle} from "../common/CommonUI";
+import { isAdminUser } from "../authentication/authentication";
 
 import './Home.css';
 
 import termsFrPath from '../static/posts/Home.md'
+import termsFrPathAdmin from '../static/posts/HomeAdmin.md'
 
 
 function Home () {
@@ -12,7 +14,8 @@ function Home () {
 
 
   useEffect(() => {
-    fetch(termsFrPath
+    let terms = isAdminUser() ? termsFrPathAdmin : termsFrPath;
+    fetch(terms
     ).then((response) => response.text()
     ).then((text) => {
       setTerms(text);

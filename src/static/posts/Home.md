@@ -1,5 +1,5 @@
-# ARIAVT
 
-## Automatic Retinal Image Analysis and Visualization Tool
+## Analysis methods available
+
 
 

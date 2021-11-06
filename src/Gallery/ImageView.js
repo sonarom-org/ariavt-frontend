@@ -11,7 +11,6 @@ import {getToken} from "../authentication/authentication";
 import axios from "axios";
 import config from "../config.json";
 import {SimpleIDB} from "../common/SimpleIDB";
-import {Label} from "@material-ui/icons";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -111,6 +110,9 @@ export default function ImageView (props) {
     text: props.image.info.text
   });
   const [title, setTitle] = useState(props.image.info.title);
+
+  // Force scroll to top
+  window.scrollTo(0, 0);
 
   function allRequiredFilled() {
     return (!state.title)
@@ -238,7 +240,7 @@ export default function ImageView (props) {
             Back
           </Button>
           <Typography variant={'h5'}>
-            Image <b>{title}</b>
+            Analysis of image <b>{title}</b>
           </Typography>
           <div />
         </div>

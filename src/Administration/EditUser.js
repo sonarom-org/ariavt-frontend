@@ -51,7 +51,7 @@ export default function EditUser(props) {
         <AppBar className={classes.appBar}>
           <Toolbar>
             <Typography variant="h6" className={classes.title}>
-              Administration
+              Users panel
             </Typography>
             <IconButton edge="start" color="inherit" onClick={props.handleClose}>
               <CloseIcon />

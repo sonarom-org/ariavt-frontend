@@ -10,7 +10,6 @@ import Home from './Home/Home';
 import Gallery from "./Gallery/Gallery";
 import NavigationBar from "./common/NavigationBar";
 import EmptyBar from "./common/EmptyBar";
-import Administration from "./Administration/Administration";
 import UserProfile from "./Administration/UserProfile";
 
 import PrivateRoute from './routes/PrivateRoute';
@@ -24,6 +23,7 @@ import {
 
 import config from "./config.json";
 import {SimpleIDB} from "./common/SimpleIDB";
+import UsersPanel from "./Administration/UsersPanel";
 
 
 
@@ -49,7 +49,7 @@ export default function App() {
         {/*<PublicRoute path="/login" Gallery={Login} />*/}
         {/*<PrivateRoute path="/dashboard" Gallery={Dashboard} />*/}
         <PrivateRoute path="/docs" component={Home} />
-        <PrivateRoute path="/administration" component={Administration} />
+        <PrivateRoute path="/users" component={UsersPanel} />
         <PrivateRoute path="/profile" component={UserProfile} />
       </div>
       {/*<Footer />*/}
@@ -125,8 +125,8 @@ export default function App() {
           <Switch>
             <Route exact path="/login" component={LoginContainer}/>
             <Route
-              // exact path={["/", "/dashboard", "/docs", "/administration", "/profile"]}
-              exact path={["/", "/docs", "/administration", "/profile"]}
+              // exact path={["/", "/dashboard", "/docs", "/users", "/profile"]}
+              exact path={["/", "/docs", "/users", "/profile"]}
               component={DefaultContainer}
             />
             <Route component={NotFound} />

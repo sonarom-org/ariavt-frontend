@@ -66,7 +66,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-function Administration(props) {
+function UsersPanel(props) {
   // -> Styles
   const classes = useStyles();
   // -> States
@@ -271,7 +271,7 @@ function Administration(props) {
     <div>
       <div className={classes.fullHeight}>
         <SectionActionTitle
-          title={"Administration panel"}
+          title={"Users panel"}
           subtitle={"Add/remove users"}
           actionLabel={"Add user"}
           showActionForm={showAddUserForm}
@@ -309,4 +309,4 @@ function Administration(props) {
   );
 }
 
-export default Administration;
+export default UsersPanel;
