@@ -10,7 +10,7 @@ import Home from './Home/Home';
 import Gallery from "./Gallery/Gallery";
 import NavigationBar from "./common/NavigationBar";
 import EmptyBar from "./common/EmptyBar";
-import UserProfile from "./Administration/UserProfile";
+import UserProfile from "./UsersPanel/UserProfile";
 
 import PrivateRoute from './routes/PrivateRoute';
 import PublicRoute from './routes/PublicRoute';
@@ -23,7 +23,7 @@ import {
 
 import config from "./config.json";
 import {SimpleIDB} from "./common/SimpleIDB";
-import UsersPanel from "./Administration/UsersPanel";
+import UsersPanel from "./UsersPanel/UsersPanel";
 
 
 
