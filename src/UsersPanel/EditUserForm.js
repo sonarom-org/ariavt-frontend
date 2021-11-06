@@ -1,8 +1,6 @@
 import axios from 'axios';
 import React, {useState} from 'react';
 
-import config from "../config.json";
-import {getToken} from "../authentication/authentication";
 import TextField from "@material-ui/core/TextField";
 import Button from '@material-ui/core/Button';
 import Box from '@material-ui/core/Box';
@@ -10,7 +8,10 @@ import Grid from '@material-ui/core/Grid';
 import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
 import FormControl from '@material-ui/core/FormControl';
+
 import {itemFormStyle} from "../styles/panel";
+import config from "../config.json";
+import {getToken} from "../authentication/authentication";
 
 
 export default function EditUserForm(props) {

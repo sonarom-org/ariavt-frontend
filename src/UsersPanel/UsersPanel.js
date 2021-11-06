@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import axios from "axios";
+
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
@@ -9,15 +10,16 @@ import Avatar from '@material-ui/core/Avatar';
 import IconButton from '@material-ui/core/IconButton';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@material-ui/icons/Edit';
+
 import {Footer, SectionActionTitle} from "../common/CommonUI";
 import AddUserForm from "./AddUserForm";
-import axios from "axios";
 import config from "../config.json";
 import { getToken, isAdminUser } from "../authentication/authentication";
 import RemoveItemDialog from "../common/RemoveItemDialog";
-import EditIcon from '@material-ui/icons/Edit';
 import EditUser from "./EditUser";
 import {itemsPanelStyle} from "../styles/panel";
+
 
 
 function UsersPanel(props) {

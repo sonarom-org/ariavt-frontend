@@ -1,8 +1,10 @@
 import React, {useEffect, useState} from 'react';
+
 import {Footer, SectionTitle} from "../common/CommonUI";
 import {getUserInfo, isAdminUser} from "../authentication/authentication";
 import EditUserForm from "./EditUserForm";
 import {itemInfoStyle} from "../styles/panel";
+
 
 
 export default function UserProfile(props) {
