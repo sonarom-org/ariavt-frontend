@@ -11,23 +11,11 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import FormControl from '@material-ui/core/FormControl';
-import {makeStyles} from "@material-ui/core/styles";
-
-
-const useStyles = makeStyles((theme) => ({
-  formControl: {
-    // margin: theme.spacing(1),
-    minWidth: 120,
-  },
-  textMessage: {
-    fontSize: "large"
-  }
-}));
-
+import {itemFormStyle} from "../styles/panel";
 
 
 export default function AddUserForm(props) {
-  const classes = useStyles();
+  const classes = itemFormStyle();
 
   const [state, setState] = useState({
     // Initially, no file is selected

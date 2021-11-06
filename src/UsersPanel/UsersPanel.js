@@ -17,58 +17,12 @@ import { getToken, isAdminUser } from "../authentication/authentication";
 import RemoveItemDialog from "../common/RemoveItemDialog";
 import EditIcon from '@material-ui/icons/Edit';
 import EditUser from "./EditUser";
-
-
-const useStyles = makeStyles((theme) => ({
-  icon: {
-    marginRight: theme.spacing(2),
-  },
-  heroContent: {
-    backgroundColor: theme.palette.background.paper,
-    padding: theme.spacing(8, 0, 6),
-  },
-  heroButtons: {
-    marginTop: theme.spacing(4),
-  },
-  cardGrid: {
-    paddingTop: theme.spacing(8),
-    paddingBottom: theme.spacing(8),
-  },
-  card: {
-    height: '100%',
-    display: 'flex',
-    flexDirection: 'column',
-  },
-  cardMedia: {
-    paddingTop: '100%',
-  },
-  cardContent: {
-    flexGrow: 1,
-  },
-  fullHeight: {
-    // - <app bar height>
-    minHeight: 'calc(100vh - 48px)'
-  },
-  fullScreenCard: {
-    /* Add shadows to create the "card" effect */
-    boxShadow: "0 4px 8px 0 rgba(0,0,0,0.2)",
-    transition: "0.3s",
-    margin: 20,
-    paddingRight: 30,
-    borderRadius: "10px"
-  },
-  listItem: {
-    backgroundColor: theme.palette.background.paper,
-    margin: 12,
-    borderRadius: "10px",
-
-  }
-}));
+import {itemsPanelStyle} from "../styles/panel";
 
 
 function UsersPanel(props) {
   // -> Styles
-  const classes = useStyles();
+  const classes = itemsPanelStyle();
   // -> States
   const [dense, setDense] = React.useState(false);
   const [secondary, setSecondary] = React.useState(true);

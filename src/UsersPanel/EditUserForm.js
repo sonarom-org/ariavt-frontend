@@ -10,23 +10,11 @@ import Grid from '@material-ui/core/Grid';
 import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
 import FormControl from '@material-ui/core/FormControl';
-import {makeStyles} from "@material-ui/core/styles";
-
-
-const useStyles = makeStyles((theme) => ({
-  formControl: {
-    // margin: theme.spacing(1),
-    minWidth: 120,
-  },
-  textMessage: {
-    fontSize: "large"
-  }
-}));
-
+import {itemFormStyle} from "../styles/panel";
 
 
 export default function EditUserForm(props) {
-  const classes = useStyles();
+  const classes = itemFormStyle();
   const user = props.user;
   const adminEditor = props.adminEditor;
 
