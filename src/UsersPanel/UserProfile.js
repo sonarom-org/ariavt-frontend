@@ -1,26 +1,15 @@
 import React, {useEffect, useState} from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+
 import {Footer, SectionTitle} from "../common/CommonUI";
 import {getUserInfo, isAdminUser} from "../authentication/authentication";
-import EditUser from "./EditUser";
 import EditUserForm from "./EditUserForm";
+import {itemInfoStyle} from "../styles/panel";
 
-
-const useStyles = makeStyles((theme) => ({
-  fullHeight: {
-    // - <app bar height>
-    minHeight: 'calc(100vh - 48px)',
-  },
-  userForm: {
-    margin: 'auto',
-    maxWidth: 600,
-  }
-}));
 
 
 export default function UserProfile(props) {
   // -> Styles
-  const classes = useStyles();
+  const classes = itemInfoStyle();
   // -> States
   const [userInfo, setUserInfo] = useState(getUserInfo());
 

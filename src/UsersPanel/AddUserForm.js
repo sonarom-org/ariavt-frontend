@@ -1,8 +1,6 @@
 import axios from 'axios';
 import React, {useState} from 'react';
 
-import config from "../config.json";
-import {getToken} from "../authentication/authentication";
 import TextField from "@material-ui/core/TextField";
 import Button from '@material-ui/core/Button';
 import Box from '@material-ui/core/Box';
@@ -11,23 +9,15 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import FormControl from '@material-ui/core/FormControl';
-import {makeStyles} from "@material-ui/core/styles";
 
-
-const useStyles = makeStyles((theme) => ({
-  formControl: {
-    // margin: theme.spacing(1),
-    minWidth: 120,
-  },
-  textMessage: {
-    fontSize: "large"
-  }
-}));
+import {itemFormStyle} from "../styles/panel";
+import config from "../config.json";
+import {getToken} from "../authentication/authentication";
 
 
 
 export default function AddUserForm(props) {
-  const classes = useStyles();
+  const classes = itemFormStyle();
 
   const [state, setState] = useState({
     // Initially, no file is selected
@@ -189,7 +179,7 @@ export default function AddUserForm(props) {
             id="demo-simple-select-outlined"
             value={state.role}
             onChange={onInputChange('role')}
-            label="Age"
+            label="Role"
             autoWidth
           >
             <MenuItem value="">

@@ -25,8 +25,7 @@ const useStyles = makeStyles((theme) => ({
 
 
 export default function SimpleTabs(props) {
-  // const allTabs = ["/", "/login", "/dashboard", "/docs", "/administration"];
-  const validTabs = ["/", "/login", "/docs", "/users"];
+  const validTabs = ["/", "/login", "/docs", "/users", "/services"];
   const classes = useStyles();
   const [isAdmin, setIsAdmin] = useState(isAdminUser());
 
@@ -112,6 +111,17 @@ export default function SimpleTabs(props) {
                     value={"/users"}
                     component={Link}
                     to={"/users"}
+                />}
+                {isAdmin && <Tab
+                    classes={{
+                        root: classes.fullHeight,
+                        selected: classes.colorfulTabs,
+                        // disabled: classes.colorfulTabs
+                    }}
+                    label="Services"
+                    value={"/services"}
+                    component={Link}
+                    to={"/services"}
                 />}
                 <Tab
                   classes={{

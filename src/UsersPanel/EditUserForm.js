@@ -1,8 +1,6 @@
 import axios from 'axios';
 import React, {useState} from 'react';
 
-import config from "../config.json";
-import {getToken} from "../authentication/authentication";
 import TextField from "@material-ui/core/TextField";
 import Button from '@material-ui/core/Button';
 import Box from '@material-ui/core/Box';
@@ -10,24 +8,16 @@ import Grid from '@material-ui/core/Grid';
 import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
 import FormControl from '@material-ui/core/FormControl';
-import {makeStyles} from "@material-ui/core/styles";
+import MenuItem from '@material-ui/core/MenuItem';
 
-
-const useStyles = makeStyles((theme) => ({
-  formControl: {
-    // margin: theme.spacing(1),
-    minWidth: 120,
-  },
-  textMessage: {
-    fontSize: "large"
-  }
-}));
-
+import {itemFormStyle} from "../styles/panel";
+import config from "../config.json";
+import {getToken} from "../authentication/authentication";
 
 
 export default function EditUserForm(props) {
-  const classes = useStyles();
-  const user = props.user;
+  const classes = itemFormStyle();
+  const user = props.item;
   const adminEditor = props.adminEditor;
 
   const [state, setState] = useState({
@@ -214,19 +204,23 @@ export default function EditUserForm(props) {
           variant="outlined"
           margin="normal"
           className={classes.formControl}
-          disabled
+          required
         >
-          <InputLabel id="role-label">Role</InputLabel>
+          <InputLabel id="demo-simple-select-outlined-label">Role</InputLabel>
           <Select
-            native
-            labelId="role-label"
-            id="role"
+            labelId="demo-simple-select-outlined-label"
+            id="demo-simple-select-outlined"
             value={state.role}
+            onChange={onInputChange('role')}
             label="Role"
             disabled={!adminEditor}
             autoWidth
           >
-            <option value={"admin"}>{state.role}</option>
+            <MenuItem value="">
+              <em>None</em>
+            </MenuItem>
+            <MenuItem value={"admin"}>Admin</MenuItem>
+            <MenuItem value={"user"}>User</MenuItem>
           </Select>
         </FormControl>
 
