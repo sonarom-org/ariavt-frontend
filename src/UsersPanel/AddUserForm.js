@@ -179,7 +179,7 @@ export default function AddUserForm(props) {
             id="demo-simple-select-outlined"
             value={state.role}
             onChange={onInputChange('role')}
-            label="Age"
+            label="Role"
             autoWidth
           >
             <MenuItem value="">

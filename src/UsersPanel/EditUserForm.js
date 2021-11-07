@@ -8,6 +8,7 @@ import Grid from '@material-ui/core/Grid';
 import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
 import FormControl from '@material-ui/core/FormControl';
+import MenuItem from '@material-ui/core/MenuItem';
 
 import {itemFormStyle} from "../styles/panel";
 import config from "../config.json";
@@ -203,19 +204,23 @@ export default function EditUserForm(props) {
           variant="outlined"
           margin="normal"
           className={classes.formControl}
-          disabled
+          required
         >
-          <InputLabel id="role-label">Role</InputLabel>
+          <InputLabel id="demo-simple-select-outlined-label">Role</InputLabel>
           <Select
-            native
-            labelId="role-label"
-            id="role"
+            labelId="demo-simple-select-outlined-label"
+            id="demo-simple-select-outlined"
             value={state.role}
+            onChange={onInputChange('role')}
             label="Role"
             disabled={!adminEditor}
             autoWidth
           >
-            <option value={"admin"}>{state.role}</option>
+            <MenuItem value="">
+              <em>None</em>
+            </MenuItem>
+            <MenuItem value={"admin"}>Admin</MenuItem>
+            <MenuItem value={"user"}>User</MenuItem>
           </Select>
         </FormControl>
 
