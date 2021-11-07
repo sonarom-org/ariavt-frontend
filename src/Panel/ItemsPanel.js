@@ -159,9 +159,9 @@ export default function ItemsPanel(props) {
     <div>
       <div className={classes.fullHeight}>
         <SectionActionTitle
-          title={"Items panel"}
-          subtitle={"Add/remove items"}
-          actionLabel={"Add item"}
+          title={props.itemsName+" panel"}
+          subtitle={"Add/remove "+props.itemsName.toLowerCase()}
+          actionLabel={"Add "+props.itemName.toLowerCase()}
           showActionForm={showAddItemForm}
           handleAction={handleAddItem}
           FormComponent={<props.addItemForm handleActionFinished={handleItemAdded} />}
@@ -171,8 +171,9 @@ export default function ItemsPanel(props) {
           item={selectedItem}
           handleClose={handleCloseEditItem}
           handleActionFinished={handleEditFinished}
+          itemsName={props.itemsName}
           form={<props.editItemForm
-            title={"Edit user data"}
+            title={"Edit "+props.itemName.toLowerCase()+" data"}
             adminEditor={isAdminUser()}
             user={selectedItem}
             handleActionFinished={handleEditFinished}

@@ -1,4 +1,3 @@
-import React from 'react';
 import axios from "axios";
 
 import AddUserForm from "./AddUserForm";
@@ -55,6 +54,8 @@ export default function UsersPanel(props) {
     editItemForm={EditUserForm}
     history={props.history}
     listItem={UserItem}
+    itemsName="Users"
+    itemName="User"
   />
 
 }

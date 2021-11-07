@@ -1,5 +1,3 @@
-import React from 'react';
-
 import ListItem from '@material-ui/core/ListItem';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
@@ -22,7 +20,7 @@ export default function UserItem(props) {
         </Avatar>
       </ListItemAvatar>
       <ListItemText
-        primary={`${user.fullName} (${user.name})`}
+        primary={`${user.fullName} (${user.username})`}
         secondary={props.showSecondary ? user.role : null}
       />
       <ListItemSecondaryAction>
