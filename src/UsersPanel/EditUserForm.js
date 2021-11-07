@@ -17,7 +17,7 @@ import {getToken} from "../authentication/authentication";
 
 export default function EditUserForm(props) {
   const classes = itemFormStyle();
-  const user = props.user;
+  const user = props.item;
   const adminEditor = props.adminEditor;
 
   const [state, setState] = useState({

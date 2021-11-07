@@ -175,7 +175,7 @@ export default function ItemsPanel(props) {
           form={<props.editItemForm
             title={"Edit "+props.itemName.toLowerCase()+" data"}
             adminEditor={isAdminUser()}
-            user={selectedItem}
+            item={selectedItem}
             handleActionFinished={handleEditFinished}
           />}
         />
