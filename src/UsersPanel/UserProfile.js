@@ -35,7 +35,7 @@ export default function UserProfile(props) {
           <EditUserForm
             title={""}
             adminEditor={isAdminUser()}
-            user={userInfo}
+            item={userInfo}
             handleActionFinished={() => {}}
           />
         </div>

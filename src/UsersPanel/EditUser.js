@@ -47,7 +47,7 @@ export default function EditUser(props) {
           <EditUserForm
             title={"Edit user data"}
             adminEditor={isAdminUser()}
-            user={props.user}
+            item={props.user}
             handleActionFinished={props.handleActionFinished}
           />
         </div>
