@@ -90,8 +90,8 @@ export default function ServiceForm(props) {
           width={100}
         >
           <MenuItem value=""><em>None</em></MenuItem>
-          <MenuItem value={"admin"}>Measurement</MenuItem>
-          <MenuItem value={"user"}>Image</MenuItem>
+          <MenuItem value={"measurement"}>Measurement</MenuItem>
+          <MenuItem value={"image"}>Image</MenuItem>
         </Select>
       </FormControl>
 

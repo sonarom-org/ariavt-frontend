@@ -1,4 +1,6 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
+import axios from "axios";
+
 import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
@@ -6,11 +8,16 @@ import {makeStyles} from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import {Paper} from "@material-ui/core";
+import Alert from '@mui/material/Alert';
+import IconButton from '@mui/material/IconButton';
+import Collapse from '@mui/material/Collapse';
+import CloseIcon from '@mui/icons-material/Close';
+
+import {SimpleIDB} from "../common/SimpleIDB";
 import {Footer} from "../common/CommonUI";
 import {getToken} from "../authentication/authentication";
-import axios from "axios";
 import config from "../config.json";
-import {SimpleIDB} from "../common/SimpleIDB";
+
 
 
 const useStyles = makeStyles((theme) => ({
@@ -44,25 +51,286 @@ const useStyles = makeStyles((theme) => ({
     padding: 20,
     marginBottom: 40,
     borderRadius: 6,
+  },
+  code: {
+    whiteSpace: "pre-wrap",
   }
 }));
 
 
+
+function TransitionAlerts(props) {
+  const [open, setOpen] = React.useState(props.open);
+
+  return (
+    <Box sx={{ width: '100%' }}>
+      <Collapse in={open}>
+        <Alert
+          severity="error"
+          action={
+            <IconButton
+              aria-label="close"
+              color="inherit"
+              size="small"
+              onClick={() => {
+                setOpen(false);
+                props.onClose();
+              }}
+            >
+              <CloseIcon fontSize="inherit" />
+            </IconButton>
+          }
+          sx={{ mb: 2 }}
+        >
+          {props.message}
+        </Alert>
+      </Collapse>
+    </Box>
+  );
+}
+
+// TODO: mostrar los resultados en formato JSON de una forma más elaborada.
+function ImageAnalysisCardMeasurement(props) {
+  const classes = useStyles();
+  const [message, setMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState(null);
+  const [retrievedData, setRetrievedData] = useState(null);
+
+  const service = props.service;
+
+  useEffect(()=>{
+    getData();
+  }, [])
+
+  function getDataFromService(imageId, serviceId, getOnlyFinished) {
+    const params = new URLSearchParams();
+    params.append('image_id', imageId);
+    if (getOnlyFinished) {
+      params.append("get_only_finished", "true");
+    } else {
+      params.append("get_only_finished", "false");
+    }
+
+    axios.get(
+      config.API_URL + "/services/"+serviceId,
+      {
+        // Set authentication header
+        headers: {
+          'Authorization': `Bearer ${getToken()}`,
+        },
+        params: params,
+      }
+    ).then(response => {
+
+      if (response.status === 404) {
+        setMessage("Generate results");
+        setRetrievedData(null);
+      } else if (response.status === 503) {
+        setErrorMessage("Service unavailable");
+        setMessage("Generate results");
+        setRetrievedData(null);
+        console.log("ENTRA AQUÍ LO MALO");
+      } else {
+        console.log("RESPONSE DATA", response.data);
+        let retrievedDataStr = JSON.stringify(response.data, null, 4);
+        setRetrievedData(retrievedDataStr);
+        console.log("RESPONSE DATA", retrievedDataStr);
+        setMessage("Download results");
+      }
+
+    }).catch(error => {
+      if (error.response.status === 503) {
+        setErrorMessage("Service " + service.name + " unavailable");
+      }
+      console.log("ERROR", error);
+      setMessage("Generate results");
+      setRetrievedData(null);
+    });
+  }
+
+  function getData() {
+    if (!props.image) {
+      getDataFromService(
+        props.originalImage.id, service.id, true
+      );
+    } else {
+      setMessage("Open image");
+      setRetrievedData();
+    }
+  }
+  
+  /**
+   * Download retrieved data in a JSON file.
+   */
+  function downloadData () {
+    if (retrievedData) {
+      const blob = new Blob([retrievedData], {type: "application/json"});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${props.originalImage.id}_${service.name}_data.json`;
+      a.click();
+    }
+  }
+
+  function generateResult () {
+    getDataFromService(
+      props.originalImage.id, service.id, false
+    );
+  }
+
+  function onCloseError () {
+    setErrorMessage(null);
+  }
+
+  return (
+    <Paper elevation={3} className={classes.imagePaper}>
+      <Box textAlign='center'>
+        <Box pt={1}>
+          <Grid
+            container
+            direction="row"
+            justify="space-between"
+            alignItems="center">
+            <Typography
+              component="h5"
+              variant="h6"
+              align="center"
+              color="textPrimary"
+              gutterBottom
+            >
+              {props.title || service.fullName}
+            </Typography>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={retrievedData ? downloadData : generateResult}
+            >
+              {message}
+            </Button>
+          </Grid>
+        </Box>
+        <Box m={1} pt={1} textAlign='left'>
+          <code className={classes.code}>
+            {retrievedData}
+          </code>
+          {
+            errorMessage
+            && <TransitionAlerts
+                message={errorMessage}
+                open={true}
+                onClose={onCloseError} />
+          }
+        </Box>
+      </Box>
+    </Paper>
+  );
+}
+
+
+
 function ImageAnalysisCard(props) {
   const classes = useStyles();
+  const [message, setMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState(null);
+  const [image, setImage] = useState(null);
+  const [imageBlob, setImageBlob] = useState(null);
 
-  let message;
-  let image;
-  if (!props.image) {
-    message = "Generate results";
-    image = <></>
-  } else {
-    message = "Open image";
-    image = <img
-        alt='analysis'
-        className={classes.analysis}
-        src={props.image.image}
-    />;
+
+  const service = props.service;
+
+  useEffect(()=>{
+    getImage();
+    // Disable incorrect linting
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+
+  function getImageFromService(imageId, serviceId, getOnlyFinished) {
+    const params = new URLSearchParams();
+    params.append('image_id', imageId);
+    if (getOnlyFinished) {
+      params.append("get_only_finished", "true");
+    } else {
+      params.append("get_only_finished", "false");
+    }
+
+    axios.get(
+      config.API_URL + "/services/"+serviceId,
+      {
+        // Set authentication header
+        headers: {
+          'Authorization': `Bearer ${getToken()}`,
+        },
+        params: params,
+        // IMPORTANT: responseType 'blob' is necessary in order to correctly
+        //  show the images.
+        responseType: 'blob'
+      }
+    ).then(response => {
+
+      if (response.status !== 404) {
+        console.log("RESPONSE DATA", response.data);
+
+      const blob = new Blob(
+        [response.data],
+        { type: response.headers["content-type"] }
+      );
+      console.log(blob);
+      const resultImage = URL.createObjectURL(blob);
+      console.log(resultImage);
+      setMessage("Open image");
+      setImage(<img
+          alt='analysis'
+          className={classes.analysis}
+          src={resultImage}
+      />);
+      setImageBlob(resultImage);
+      } else {
+        setMessage("Generate results");
+      setImage(<></>);
+      }
+
+    }).catch(error => {
+      if (error.response.status === 503) {
+        setErrorMessage("Service " + service.name + " unavailable");
+      }
+      setMessage("Generate results");
+      setImage(<></>);
+    });
+  }
+
+  function getImage() {
+    if (!props.image) {
+      console.log("ENTRA POR AQUÍ (6)");
+      getImageFromService(
+        props.originalImage.id, service.id, true
+      );
+    } else {
+      console.log("ENTRA POR AQUÍ (3)");
+      setMessage("Open image");
+      setImage(<img
+          alt='analysis'
+          className={classes.analysis}
+          src={props.image.image}
+      />);
+      setImageBlob(props.image.image);
+      // setRefresh(!refresh);
+    }
+  }
+
+  const openInNewTab = () => {
+    window.open(imageBlob, "_blank");
+  }
+
+  const generateResult = () => {
+    getImageFromService(
+      props.originalImage.id, service.id, false
+    );
+  }
+
+  function onCloseError () {
+    setErrorMessage(null);
   }
 
   return (
@@ -72,36 +340,41 @@ function ImageAnalysisCard(props) {
 
         <Box pt={1}>
           <Grid
-              container
-              direction="row"
-              justify="space-between"
-              alignItems="center">
+            container
+            direction="row"
+            justify="space-between"
+            alignItems="center">
             <Typography
-                component="h5"
-                variant="h6"
-                align="center"
-                color="textPrimary"
-                gutterBottom
+              component="h5"
+              variant="h6"
+              align="center"
+              color="textPrimary"
+              gutterBottom
             >
-              {props.title}
+              {props.title || service.fullName}
             </Typography>
             <Button
-                variant="contained"
-                color="primary"
-                onClick={props.onClickButton}
+              variant="contained"
+              color="primary"
+              onClick={imageBlob ? openInNewTab : generateResult}
             >
               {message}
             </Button>
           </Grid>
+        </Box>
+        <Box m={1} pt={1} textAlign='left'>
+          {errorMessage && <TransitionAlerts message={errorMessage} open={true} onClose={onCloseError} />}
         </Box>
       </Box>
     </Paper>
   );
 }
 
+
 export default function ImageView (props) {
   // Styles
   const classes = useStyles();
+
   // State
   const [message, setMessage] = useState('');
   const [state, setState] = useState({
@@ -125,6 +398,9 @@ export default function ImageView (props) {
       text: props.image.info.text
     });
   }
+
+  const services = props.services;
+  // console.log("SERVICES", services);
 
   // ------------------------------------------------------------------
   // -> Database operations
@@ -205,18 +481,7 @@ export default function ImageView (props) {
     });
   };
 
-  const openInNewTab = () => {
-    // SimpleIDB.get(props.image.id).then(object => {
-    //   if (object) {
-    //     window.open(URL.createObjectURL(object.image), "_blank");
-    //   } else {
-    //     // Error: NO IMAGE
-    //     console.log(`Image ${props.image.id} not found.`)
-    //   }
-    // });
-    // console.log(state.imageFile);
-    window.open(props.image.image, "_blank");
-  }
+
 
   // General function to update the state of the different form input fields
   function onInputChange(field) {
@@ -249,22 +514,23 @@ export default function ImageView (props) {
           <div className={classes.columnImage}>
 
             <ImageAnalysisCard
-                onClickButton={openInNewTab}
-                image={props.image}
-                title={"Original retinography"}
+              image={props.image}
+              title={"Original retinography"}
             />
 
-            <ImageAnalysisCard
-                onClickButton={openInNewTab}
-                image={props.image}
-                title={"Vascular segmentation"}
-            />
-
-            <ImageAnalysisCard
-                onClickButton={openInNewTab}
-                title={"Artery/Vein segmentation"}
-            />
-
+            {Object.keys(services).map(key => (
+              (services[key].resultType.toLowerCase() === "image") ?
+              <ImageAnalysisCard
+                key={key}
+                originalImage={props.image}
+                service={services[key]}
+              />
+                : <ImageAnalysisCardMeasurement
+                  key={key}
+                  originalImage={props.image}
+                  service={services[key]}
+                />
+            ))}
           </div>
 
           <div className={classes.column}>

@@ -18,6 +18,7 @@ import {SimpleIDB} from "../common/SimpleIDB";
 import RemoveItemDialog from "../common/RemoveItemDialog";
 import './ImageView.css';
 import ImageView from "./ImageView";
+import getAllServices from "../ServicesPanel/services";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -55,9 +56,9 @@ const useStyles = makeStyles((theme) => ({
 
 
 export default function Gallery() {
-
   // -> Styles
   const classes = useStyles();
+
   // -> Access token
   const token = getToken();
   // -> States
@@ -79,6 +80,8 @@ export default function Gallery() {
     image: null,
     id: null
   });
+  // Services
+  const [services, setServices] = useState({});
 
   // ------------------------------------------------------------------
   // -> Database operations
@@ -326,6 +329,7 @@ export default function Gallery() {
 
   useEffect(()=>{
     getImagesIDs();
+    getAllServices(setServices);
     // Disable incorrect linting
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refresh])
@@ -415,7 +419,11 @@ export default function Gallery() {
                     { showUploadForm ? "Close" : "Add image" }
                   </Button>
                 </Grid>
-                { showUploadForm ? <AddImageForm handleUploaded={handleUploaded} /> : null }
+                {
+                  showUploadForm ?
+                    <AddImageForm handleUploaded={handleUploaded} />
+                    : null
+                }
               </Grid>
             </div>
           </Container>
@@ -459,6 +467,7 @@ export default function Gallery() {
          image={imageView.image}
          handleBack={handleBack}
          doRefresh={doRefresh}
+         services={services}
        />
       }
     </div>
