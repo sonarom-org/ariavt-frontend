@@ -1,15 +1,21 @@
 import axios from 'axios';
 import React, {useState} from 'react';
 
-import config from "../config.json";
-import {getToken} from "../authentication/authentication";
 import TextField from "@material-ui/core/TextField";
 import Button from '@material-ui/core/Button';
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 
-export default function AddImageForm(props) {
+import config from "../config.json";
+import {getToken} from "../authentication/authentication";
+import {itemFormStyle} from "../styles/panel";
+import {TransitionAlert} from "../common/Alerts";
 
+
+
+export default function AddImageForm(props) {
+  const classes = itemFormStyle();
+  
   const [state, setState] = useState({
     // Initially, no file is selected
     selectedFile: null,
@@ -34,7 +40,12 @@ export default function AddImageForm(props) {
   };
 
   // On file upload (click the upload button)
-  const onFileUpload = () => {
+  async function onFileUpload () {
+    // Send formData object
+    const token = getToken();
+    if (!token) {
+      return;
+    }
     // Create an object of formData
     const formData = new FormData();
 
@@ -70,12 +81,7 @@ export default function AddImageForm(props) {
     // Details of the uploaded file
     console.log(state.selectedFile);
 
-    // Request made to the backend api
-    // Send formData object
-    const token = getToken();
-    if (!token) {
-      return;
-    }
+    // Request made to the backend API
     return axios.post(config.API_URL + "/images/", formData, {
       headers: {
         "Authorization": `Bearer ${token}`,
@@ -83,13 +89,18 @@ export default function AddImageForm(props) {
         "accept": "application/json"
       }
     }).then(response => {
-      // setUserSession(response.data.token, response.data.user);
-      // setAuthLoading(false);
       console.log(response);
+      props.setAlert({
+        severity: "success",
+        message: "Image correctly uploaded."
+      });
+      // Update the gallery using props handleUploaded
       props.handleUploaded();
     }).catch(error => {
-      // removeUserSession();
-      // setAuthLoading(false);
+      props.setAlert({
+        severity: "error",
+        message: "Image could not be uploaded."
+      });
     });
   };
 
@@ -104,23 +115,17 @@ export default function AddImageForm(props) {
 
   // File content to be displayed after
   // file upload is complete
-  const fileData = () => {
+  function fileData() {
     if (state.selectedFile) {
       return (
         <div>
-          <h4>{state.selectedFile.name}</h4>
-          {/*<br />*/}
-          {/*<h3>File Details:</h3>*/}
-          {/*<ul>*/}
-          {/*  <li>File Name: {state.selectedFile.name}</li>*/}
-          {/*  <li>File Type: {state.selectedFile.type}</li>*/}
-          {/*</ul>*/}
+          <h3>{state.selectedFile.name}</h3>
         </div>
       );
     } else {
       return (
         <div>
-          <h4>Select a color fundus image to upload.</h4>
+          <h3>Select a color fundus image to upload.</h3>
         </div>
       );
     }
@@ -211,6 +216,19 @@ export default function AddImageForm(props) {
           </Grid>
         </ Box>
 
+      </div>
+      <div className={classes.textMessage}>
+        <Box pt={4}>
+          {
+            props.alert.message
+            &&
+            <TransitionAlert
+              severity="success"
+              alert={props.alert}
+              setAlert={props.setAlert}
+              open={true} />
+          }
+        </ Box>
       </div>
 
     </div>

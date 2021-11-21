@@ -9,10 +9,9 @@ import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import {Paper} from "@material-ui/core";
 import Alert from '@mui/material/Alert';
-import IconButton from '@mui/material/IconButton';
 import Collapse from '@mui/material/Collapse';
-import CloseIcon from '@mui/icons-material/Close';
 
+import {TransitionAlert} from "../common/Alerts";
 import {SimpleIDB} from "../common/SimpleIDB";
 import {Footer} from "../common/CommonUI";
 import {getToken} from "../authentication/authentication";
@@ -59,7 +58,7 @@ const useStyles = makeStyles((theme) => ({
 
 
 
-function TransitionProcessing(props) {
+function ProcessingAlert(props) {
   const [open, setOpen] = React.useState(props.open);
 
   return (
@@ -78,36 +77,6 @@ function TransitionProcessing(props) {
 
 
 
-function TransitionAlerts(props) {
-  const [open, setOpen] = React.useState(props.open);
-
-  return (
-    <Box sx={{ width: '100%' }}>
-      <Collapse in={open}>
-        <Alert
-          severity="error"
-          action={
-            <IconButton
-              aria-label="close"
-              color="inherit"
-              size="small"
-              onClick={() => {
-                setOpen(false);
-                props.onClose();
-              }}
-            >
-              <CloseIcon fontSize="inherit" />
-            </IconButton>
-          }
-          sx={{ mb: 2 }}
-        >
-          {props.message}
-        </Alert>
-      </Collapse>
-    </Box>
-  );
-}
-
 // TODO: mostrar los resultados en formato JSON de una forma más elaborada.
 function ImageAnalysisCardMeasurement(props) {
   const classes = useStyles();
@@ -120,6 +89,8 @@ function ImageAnalysisCardMeasurement(props) {
 
   useEffect(()=>{
     getData();
+    // Disable incorrect linting
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   function getDataFromService(imageId, serviceId, getOnlyFinished) {
@@ -145,21 +116,11 @@ function ImageAnalysisCardMeasurement(props) {
     ).then(response => {
       setIsBeingProcessed(false);
 
-      if (response.status === 404) {
-        setMessage("Generate results");
-        setRetrievedData(null);
-      } else if (response.status === 503) {
-        setErrorMessage("Service unavailable");
-        setMessage("Generate results");
-        setRetrievedData(null);
-        console.log("ENTRA AQUÍ LO MALO");
-      } else {
-        console.log("RESPONSE DATA", response.data);
-        let retrievedDataStr = JSON.stringify(response.data, null, 4);
-        setRetrievedData(retrievedDataStr);
-        console.log("RESPONSE DATA", retrievedDataStr);
-        setMessage("Download results");
-      }
+      console.log("RESPONSE DATA", response.data);
+      let retrievedDataStr = JSON.stringify(response.data, null, 4);
+      setRetrievedData(retrievedDataStr);
+      console.log("RESPONSE DATA", retrievedDataStr);
+      setMessage("Download results");
 
     }).catch(error => {
       setIsBeingProcessed(false);
@@ -167,6 +128,10 @@ function ImageAnalysisCardMeasurement(props) {
         setErrorMessage("Service " + service.name + " unavailable");
       } else if (error.response.status === 422) {
         setErrorMessage("Service could not process image");
+      } else if (error.response.status === 404) {
+        // Pass, expected behaviour when the image has not been processed.
+      } else {
+        setErrorMessage("Service " + service.name + " error");
       }
       console.log("ERROR", error);
       setMessage("Generate results");
@@ -242,14 +207,17 @@ function ImageAnalysisCardMeasurement(props) {
           </code>
           {
             errorMessage
-            && <TransitionAlerts
-                message={errorMessage}
-                open={true}
-                onClose={onCloseError} />
+            &&
+            <TransitionAlert
+              severity="error"
+              message={errorMessage}
+              setMessage={setErrorMessage}
+              open={true} />
           }
           {
             isBeingProcessed
-            && <TransitionProcessing open={isBeingProcessed}/>
+            &&
+            <ProcessingAlert open={isBeingProcessed}/>
           }
         </Box>
       </Box>
@@ -303,8 +271,7 @@ function ImageAnalysisCard(props) {
     ).then(response => {
       setIsBeingProcessed(false);
 
-      if (response.status !== 404) {
-        console.log("RESPONSE DATA", response.data);
+      console.log("RESPONSE DATA", response.data);
 
       const blob = new Blob(
         [response.data],
@@ -320,10 +287,6 @@ function ImageAnalysisCard(props) {
           src={resultImage}
       />);
       setImageBlob(resultImage);
-      } else {
-        setMessage("Generate results");
-      setImage(<></>);
-      }
 
     }).catch(error => {
       setIsBeingProcessed(false);
@@ -331,6 +294,10 @@ function ImageAnalysisCard(props) {
         setErrorMessage("Service " + service.name + " unavailable");
       } else if (error.response.status === 422) {
         setErrorMessage("Service could not process image");
+      } else if (error.response.status === 404) {
+        // Pass, expected behaviour when the image has not been processed. 
+      } else {
+        setErrorMessage("Service " + service.name + " error");
       }
       setMessage("Generate results");
       setImage(<></>);
@@ -339,12 +306,10 @@ function ImageAnalysisCard(props) {
 
   function getImage() {
     if (!props.image) {
-      // console.log("ENTRA POR AQUÍ (6)");
       getImageFromService(
         props.originalImage.id, service.id, true
       );
     } else {
-      // console.log("ENTRA POR AQUÍ (3)");
       setMessage("Open image");
       setImage(<img
           alt='analysis'
@@ -352,7 +317,6 @@ function ImageAnalysisCard(props) {
           src={props.image.image}
       />);
       setImageBlob(props.image.image);
-      // setRefresh(!refresh);
     }
   }
 
@@ -374,7 +338,6 @@ function ImageAnalysisCard(props) {
     <Paper elevation={3} className={classes.imagePaper}>
       <Box textAlign='center'>
         {image}
-
         <Box pt={1}>
           <Grid
             container
@@ -402,14 +365,17 @@ function ImageAnalysisCard(props) {
         <Box m={1} pt={1} textAlign='left'>
           {
             errorMessage
-            && <TransitionAlerts
-                message={errorMessage}
-                open={true}
-                onClose={onCloseError} />
+            &&
+            <TransitionAlert
+              severity="error"
+              message={errorMessage}
+              setMessage={setErrorMessage}
+              open={true} />
           }
           {
             isBeingProcessed
-            && <TransitionProcessing open={isBeingProcessed}/>
+            &&
+            <ProcessingAlert open={isBeingProcessed}/>
           }
         </Box>
       </Box>
@@ -423,7 +389,10 @@ export default function ImageView (props) {
   const classes = useStyles();
 
   // State
-  const [message, setMessage] = useState('');
+  const [alert, setAlert] = useState({
+    severity: null,
+    message: null
+  });
   const [state, setState] = useState({
     // Initial state
     title: props.image.info.title,
@@ -449,7 +418,7 @@ export default function ImageView (props) {
   const services = props.services;
   // console.log("SERVICES", services);
 
-  // ------------------------------------------------------------------
+  // ------------------------------------------------------------------         
   // -> Database operations
 
   function insertObject (id, image) {
@@ -469,7 +438,7 @@ export default function ImageView (props) {
   }
 
   // On file upload (click the upload button)
-  const handleUpdate = () => {
+  async function handleUpdate() {
 
     // Request made to the backend api
     // Send formData object
@@ -512,19 +481,22 @@ export default function ImageView (props) {
           }
         }
     ).then(response => {
-      // setUserSession(response.data.token, response.data.user);
-      // setAuthLoading(false);
       console.log(response);
       if (response.status === 200) {
-        setMessage("Image information correctly updated!");
+        setAlert({
+          severity: "success",
+          message: "Image information correctly updated."
+        });
       }
       setTitle(state.title);
       // Refresh gallery
       props.doRefresh();
       props.handleActionFinished();
     }).catch(error => {
-      // removeUserSession();
-      // setAuthLoading(false);
+      setAlert({
+        severity: "error",
+        message: "Image information could not be updated."
+      });
     });
   };
 
@@ -636,13 +608,21 @@ export default function ImageView (props) {
 
                 </Grid>
 
-                <div className={classes.textMessage}>
-                  <Box pt={4}>
-                    {message}
-                  </ Box>
-                </div>
-
               </ Box>
+
+              <div className={classes.textMessage}>
+                <Box pt={4}>
+                  {
+                    alert.message
+                    &&
+                    <TransitionAlert
+                      severity="success"
+                      alert={alert}
+                      setAlert={setAlert}
+                      open={true} />
+                  }
+                </ Box>
+              </div>
 
             </div>
 

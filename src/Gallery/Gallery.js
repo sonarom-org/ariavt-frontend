@@ -1,5 +1,7 @@
 import React from 'react';
 import {useEffect, useState} from 'react';
+import axios from "axios";
+
 import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
@@ -9,16 +11,17 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
+
 import {getToken} from "../authentication/authentication";
-import axios from "axios";
 import config from "../config.json";
 import {Footer, TypographyTitle} from "../common/CommonUI";
 import AddImageForm from "./AddImageForm";
 import {SimpleIDB} from "../common/SimpleIDB";
 import RemoveItemDialog from "../common/RemoveItemDialog";
-import './ImageView.css';
 import ImageView from "./ImageView";
 import getAllServices from "../ServicesPanel/services";
+
+import './ImageView.css';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -79,6 +82,10 @@ export default function Gallery() {
     show: false,
     image: null,
     id: null
+  });
+  const [alert, setAlert] = useState({
+    message: null,
+    severity: null
   });
   // Services
   const [services, setServices] = useState({});
@@ -186,6 +193,10 @@ export default function Gallery() {
 
   function handleUploaded() {
     // setShowUploadForm(false);
+    setAlert({
+      message: 'Image uploaded successfully',
+      severity: 'success'
+    });
     doRefresh();
   }
 
@@ -212,7 +223,6 @@ export default function Gallery() {
             ...images,
             [id]: {
               id: id,
-              // format: "png",
               image: URL.createObjectURL(object.image),
               info: {
                 title: object.info.title,
@@ -270,7 +280,6 @@ export default function Gallery() {
               ...images,
               [id]: {
                 id: id,
-                // format: "png",
                 image: image_url,
                 info: {
                   title: responseData.data[0].title,
@@ -279,7 +288,6 @@ export default function Gallery() {
               }
             }));
             const image = {
-              // format: "png",
               image: blob,
               info: {
                 title: responseData.data[0].title,
@@ -421,7 +429,11 @@ export default function Gallery() {
                 </Grid>
                 {
                   showUploadForm ?
-                    <AddImageForm handleUploaded={handleUploaded} />
+                    <AddImageForm
+                      handleUploaded={handleUploaded}
+                      alert={alert}
+                      setAlert={setAlert}
+                    />
                     : null
                 }
               </Grid>
