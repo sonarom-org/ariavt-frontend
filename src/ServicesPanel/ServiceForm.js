@@ -8,6 +8,7 @@ import Select from '@material-ui/core/Select';
 import FormControl from '@material-ui/core/FormControl';
 
 import {itemFormStyle} from "../styles/panel";
+import {TransitionAlert} from "../common/Alerts";
 
 
 export default function ServiceForm(props) {
@@ -120,6 +121,20 @@ export default function ServiceForm(props) {
           </Button>
         </Grid>
       </ Box>
+
+      <div className={classes.textMessage}>
+        <Box pt={4}>
+          {
+            props.message
+            &&
+            <TransitionAlert
+              alert={props.alert}
+              setAlert={props.setAlert}
+              open={true} />
+          }
+        </ Box>
+      </div>
+
     </div>
   );
 

@@ -13,21 +13,24 @@ import FormControl from '@material-ui/core/FormControl';
 import {itemFormStyle} from "../styles/panel";
 import config from "../config.json";
 import {getToken} from "../authentication/authentication";
-
+import {TransitionAlert} from "../common/Alerts";
 
 
 export default function AddUserForm(props) {
   const classes = itemFormStyle();
 
   const [state, setState] = useState({
-    // Initially, no file is selected
+    // Initially, no user info is set
     username: '',
     fullName: '',
     email: '',
     password: '',
     role: ''
   });
-  const [message, setMessage] = useState('')
+  const [alert, setAlert] = useState({
+    severity: null,
+    message: null,
+  });
 
   function allRequiredFilled() {
     return (
@@ -50,7 +53,7 @@ export default function AddUserForm(props) {
 
 
   // On file upload (click the upload button)
-  const onFileUpload = () => {
+  async function onAddUser() {
     // Create an object of formData
     const formData = new FormData();
 
@@ -78,16 +81,19 @@ export default function AddUserForm(props) {
         }
       }
     ).then(response => {
-      // setUserSession(response.data.token, response.data.user);
-      // setAuthLoading(false);
       console.log(response);
       if (response.status === 200) {
-        setMessage("User correctly added");
+        setAlert({
+          severity: "success",
+          message: "User correctly added"
+        });
       }
       props.handleActionFinished();
     }).catch(error => {
-      // removeUserSession();
-      // setAuthLoading(false);
+        setAlert({
+          severity: "error",
+          message: "User could not be added"
+        });
     });
   };
 
@@ -100,7 +106,10 @@ export default function AddUserForm(props) {
       password: '',
       role: ''
     });
-    setMessage('');
+    setAlert({
+      severity: null,
+      message: null
+    });
   }
 
   return (
@@ -209,7 +218,7 @@ export default function AddUserForm(props) {
               disabled={allRequiredFilled()}
               variant="contained"
               component="label"
-              onClick={onFileUpload}
+              onClick={onAddUser}
             >
               Upload
             </Button>
@@ -219,7 +228,15 @@ export default function AddUserForm(props) {
       </div>
       <div className={classes.textMessage}>
         <Box pt={4}>
-          {message}
+          {
+            alert.message
+            &&
+            <TransitionAlert
+              severity="success"
+              alert={alert}
+              setAlert={setAlert}
+              open={true} />
+          }
         </ Box>
       </div>
 

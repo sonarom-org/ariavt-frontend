@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { setUserSession, setUserInfo } from './authentication';
-import config from "../config.json";
+
 import Container from "@material-ui/core/Container";
 import Avatar from "@material-ui/core/Avatar";
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
@@ -10,7 +9,10 @@ import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import Box from "@material-ui/core/Box";
 import {makeStyles} from "@material-ui/core/styles";
+
+import { setUserSession, setUserInfo } from './authentication';
 import {Copyright} from "../common/CommonUI";
+import config from "../config.json";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -66,7 +68,7 @@ function Login(props) {
         }
       ).then(response => {
         setUserInfo(response.data);
-        // Push /dashboard after retrieving all the necessary user data
+        // Push / after retrieving all the necessary user data
         props.history.push('/');
       }).catch(error => {
         if (error.response.status === 401) {
@@ -108,7 +110,6 @@ function Login(props) {
           fullWidth
           id="username"
           label="Username"
-          // type="username"
           {...username}
           name="username"
           autoComplete="username"
@@ -128,10 +129,6 @@ function Login(props) {
           onKeyDown={handleKeyDown}
         />
         {error && <><small style={{ color: 'red' }}>{error}</small><br /></>}<br />
-        {/*<FormControlLabel*/}
-        {/*  control={<Checkbox value="remember" color="primary"/>}*/}
-        {/*  label="Remember me"*/}
-        {/*/>*/}
         <Button
           type="submit"
           fullWidth

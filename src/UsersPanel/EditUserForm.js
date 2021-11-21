@@ -49,7 +49,7 @@ export default function EditUserForm(props) {
   }
 
   // On file upload (click the upload button)
-  const onFileUpload = () => {
+  function onFileUpload () {
 
     // Request made to the backend api
     // Send formData object
@@ -117,15 +117,6 @@ export default function EditUserForm(props) {
         <h2>
           {props.title}
         </h2>
-        {/*<Button*/}
-        {/*  color="default"*/}
-        {/*  // disabled={allRequiredFilled()}*/}
-        {/*  variant="contained"*/}
-        {/*  Gallery="label"*/}
-        {/*  onClick={onFileUpload}*/}
-        {/*>*/}
-        {/*  Close*/}
-        {/*</Button>*/}
       </Grid>
       <div>
 

@@ -1,15 +1,6 @@
 import axios from 'axios';
 import React, {useState} from 'react';
 
-import TextField from "@material-ui/core/TextField";
-import Button from '@material-ui/core/Button';
-import Box from '@material-ui/core/Box';
-import Grid from '@material-ui/core/Grid';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
-import FormControl from '@material-ui/core/FormControl';
-
 import {itemFormStyle} from "../styles/panel";
 import config from "../config.json";
 import {getToken} from "../authentication/authentication";
@@ -18,7 +9,6 @@ import ServiceForm from "./ServiceForm";
 
 
 export default function AddServiceForm(props) {
-  const classes = itemFormStyle();
 
   const [state, setState] = useState({
     name: '',
@@ -27,7 +17,10 @@ export default function AddServiceForm(props) {
     fullName: '',
     description: ''
   });
-  const [message, setMessage] = useState('')
+  const [alert, setAlert] = useState({
+    severity: null,
+    message: null
+  });
 
   function allRequiredFilled() {
     return (
@@ -50,7 +43,7 @@ export default function AddServiceForm(props) {
 
 
   // On file upload (click the upload button)
-  const onFileUpload = () => {
+  async function onFileUpload() {
     // Create an object of formData
     const formData = new FormData();
 
@@ -82,10 +75,17 @@ export default function AddServiceForm(props) {
       // setAuthLoading(false);
       console.log(response);
       if (response.status === 200) {
-        setMessage("Service correctly added");
+        setAlert({
+          severity: "success",
+          message: "Service correctly added"
+        });
       }
       props.handleActionFinished();
     }).catch(error => {
+      setAlert({
+        severity: "error",
+        message: "Service could not be added"
+      });
       // removeUserSession();
       // setAuthLoading(false);
     });
@@ -100,7 +100,10 @@ export default function AddServiceForm(props) {
       resultType: '',
       description: ''
     });
-    setMessage('');
+    setAlert({
+      severity: null,
+      message: null
+    });
   }
 
 
@@ -111,20 +114,17 @@ export default function AddServiceForm(props) {
       </h2>
       <div>
 
-       <ServiceForm
+        <ServiceForm
           onInputChange={onInputChange}
           state={state}
           handleCancel={handleCancel}
           allRequiredFilled={allRequiredFilled}
           onFileUpload={onFileUpload}
           action="Upload"
+          alert={alert}
+          setAlert={setAlert}
        />
 
-      </div>
-      <div className={classes.textMessage}>
-        <Box pt={4}>
-          {message}
-        </ Box>
       </div>
 
     </div>

@@ -23,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function NavigationBar(props) {
+export default function NavigationBar() {
   const classes = useStyles();
 
   return (

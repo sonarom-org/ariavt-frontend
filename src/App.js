@@ -47,8 +47,6 @@ export default function App() {
       <div className="container">
         <NavigationBar />
         <PrivateRoute exact path="/" component={Gallery} />
-        {/*<PublicRoute path="/login" Gallery={Login} />*/}
-        {/*<PrivateRoute path="/dashboard" Gallery={Dashboard} />*/}
         <PrivateRoute path="/docs" component={Home} />
         <PrivateRoute path="/users" component={UsersPanel} />
         <PrivateRoute path="/services" component={ServicesPanel} />
