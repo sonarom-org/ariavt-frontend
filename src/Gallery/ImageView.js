@@ -59,6 +59,25 @@ const useStyles = makeStyles((theme) => ({
 
 
 
+function TransitionProcessing(props) {
+  const [open, setOpen] = React.useState(props.open);
+
+  return (
+    <Box sx={{ width: '100%' }}>
+      <Collapse in={open}>
+        <Alert
+          severity="info"
+          sx={{ mb: 2 }}
+        >
+          Image is being processed. Please wait.
+        </Alert>
+      </Collapse>
+    </Box>
+  );
+}
+
+
+
 function TransitionAlerts(props) {
   const [open, setOpen] = React.useState(props.open);
 
@@ -94,6 +113,7 @@ function ImageAnalysisCardMeasurement(props) {
   const classes = useStyles();
   const [message, setMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState(null);
+  const [isBeingProcessed, setIsBeingProcessed] = useState(false);
   const [retrievedData, setRetrievedData] = useState(null);
 
   const service = props.service;
@@ -111,6 +131,8 @@ function ImageAnalysisCardMeasurement(props) {
       params.append("get_only_finished", "false");
     }
 
+    setIsBeingProcessed(true);
+
     axios.get(
       config.API_URL + "/services/"+serviceId,
       {
@@ -121,6 +143,7 @@ function ImageAnalysisCardMeasurement(props) {
         params: params,
       }
     ).then(response => {
+      setIsBeingProcessed(false);
 
       if (response.status === 404) {
         setMessage("Generate results");
@@ -139,8 +162,11 @@ function ImageAnalysisCardMeasurement(props) {
       }
 
     }).catch(error => {
+      setIsBeingProcessed(false);
       if (error.response.status === 503) {
         setErrorMessage("Service " + service.name + " unavailable");
+      } else if (error.response.status === 422) {
+        setErrorMessage("Service could not process image");
       }
       console.log("ERROR", error);
       setMessage("Generate results");
@@ -221,6 +247,10 @@ function ImageAnalysisCardMeasurement(props) {
                 open={true}
                 onClose={onCloseError} />
           }
+          {
+            isBeingProcessed
+            && <TransitionProcessing open={isBeingProcessed}/>
+          }
         </Box>
       </Box>
     </Paper>
@@ -233,6 +263,7 @@ function ImageAnalysisCard(props) {
   const classes = useStyles();
   const [message, setMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState(null);
+  const [isBeingProcessed, setIsBeingProcessed] = useState(false);
   const [image, setImage] = useState(null);
   const [imageBlob, setImageBlob] = useState(null);
 
@@ -255,6 +286,8 @@ function ImageAnalysisCard(props) {
       params.append("get_only_finished", "false");
     }
 
+    setIsBeingProcessed(true);
+
     axios.get(
       config.API_URL + "/services/"+serviceId,
       {
@@ -268,6 +301,7 @@ function ImageAnalysisCard(props) {
         responseType: 'blob'
       }
     ).then(response => {
+      setIsBeingProcessed(false);
 
       if (response.status !== 404) {
         console.log("RESPONSE DATA", response.data);
@@ -292,8 +326,11 @@ function ImageAnalysisCard(props) {
       }
 
     }).catch(error => {
+      setIsBeingProcessed(false);
       if (error.response.status === 503) {
         setErrorMessage("Service " + service.name + " unavailable");
+      } else if (error.response.status === 422) {
+        setErrorMessage("Service could not process image");
       }
       setMessage("Generate results");
       setImage(<></>);
@@ -302,12 +339,12 @@ function ImageAnalysisCard(props) {
 
   function getImage() {
     if (!props.image) {
-      console.log("ENTRA POR AQUÍ (6)");
+      // console.log("ENTRA POR AQUÍ (6)");
       getImageFromService(
         props.originalImage.id, service.id, true
       );
     } else {
-      console.log("ENTRA POR AQUÍ (3)");
+      // console.log("ENTRA POR AQUÍ (3)");
       setMessage("Open image");
       setImage(<img
           alt='analysis'
@@ -363,7 +400,17 @@ function ImageAnalysisCard(props) {
           </Grid>
         </Box>
         <Box m={1} pt={1} textAlign='left'>
-          {errorMessage && <TransitionAlerts message={errorMessage} open={true} onClose={onCloseError} />}
+          {
+            errorMessage
+            && <TransitionAlerts
+                message={errorMessage}
+                open={true}
+                onClose={onCloseError} />
+          }
+          {
+            isBeingProcessed
+            && <TransitionProcessing open={isBeingProcessed}/>
+          }
         </Box>
       </Box>
     </Paper>
