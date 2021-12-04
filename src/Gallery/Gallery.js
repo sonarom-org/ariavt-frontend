@@ -187,7 +187,7 @@ export default function Gallery() {
     });
   }
 
-  function handleUploadImage(event) {
+  function handleUploadImage() {
     setShowUploadForm(!showUploadForm);
   }
 

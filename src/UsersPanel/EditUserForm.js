@@ -49,7 +49,7 @@ export default function EditUserForm(props) {
   }
 
   // On file upload (click the upload button)
-  function onFileUpload () {
+  async function onFileUpload () {
 
     // Request made to the backend api
     // Send formData object
@@ -80,16 +80,12 @@ export default function EditUserForm(props) {
         }
       }
     ).then(response => {
-      // setUserSession(response.data.token, response.data.user);
-      // setAuthLoading(false);
       console.log(response);
       if (response.status === 200) {
         setMessage("User correctly updated!");
       }
       props.handleActionFinished();
     }).catch(error => {
-      // removeUserSession();
-      // setAuthLoading(false);
     });
   };
 
