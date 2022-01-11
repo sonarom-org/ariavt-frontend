@@ -7,14 +7,16 @@ import {Footer, SectionActionTitle} from "../common/CommonUI";
 import config from "../config.json";
 import { getToken, isAdminUser } from "../authentication/authentication";
 import RemoveItemDialog from "../common/RemoveItemDialog";
-import {itemsPanelStyle} from "../styles/panel";
 import EditItem from "../Panel/EditItem";
 
+import {editItemStyle} from "../styles/panel";
+import {itemsPanelStyle} from "../styles/panel";
 
 
 export default function ItemsPanel(props) {
   // -> Styles
   const classes = itemsPanelStyle();
+  const itemClasses = editItemStyle();
   // -> States
   const [dense, setDense] = React.useState(false);
   const [secondary, setSecondary] = React.useState(true);
@@ -169,6 +171,7 @@ export default function ItemsPanel(props) {
         <EditItem
           open={removeItem.showModal}
           item={selectedItem}
+          classDialogContent={itemClasses.dialogContent}
           handleClose={handleCloseEditItem}
           handleActionFinished={handleEditFinished}
           itemsName={props.itemsName}

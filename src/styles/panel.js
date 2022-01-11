@@ -10,6 +10,7 @@ export const editItemStyle = makeStyles((theme) => ({
     flex: 1,
   },
   dialogContent: {
+    marginTop: theme.spacing(10),
     padding: 30,
     maxWidth: 600,
     margin: 'auto',
@@ -24,7 +25,8 @@ export const itemFormStyle = makeStyles((theme) => ({
     minWidth: 120,
   },
   textMessage: {
-    fontSize: "large"
+    fontSize: "large",
+    minHeight: '100px',
   }
 }));
 

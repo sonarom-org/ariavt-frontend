@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect} from "react";
 
 import Box from "@material-ui/core/Box";
 import Alert from '@mui/material/Alert';
@@ -9,6 +9,16 @@ import CloseIcon from '@mui/icons-material/Close';
 
 export function TransitionAlert(props) {
   const [open, setOpen] = React.useState(props.open);
+
+  useEffect(() => {
+    setTimeout(function () {
+      setOpen(false);
+      props.setAlert({
+        severity: null,
+        message: null
+      });
+    }, 3000);
+  }, [props, setOpen]);
 
   return (
     <Box sx={{ width: '100%' }}>

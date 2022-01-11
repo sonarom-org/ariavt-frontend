@@ -10,6 +10,9 @@ import Typography from "@material-ui/core/Typography";
 import {Paper} from "@material-ui/core";
 import Alert from '@mui/material/Alert';
 import Collapse from '@mui/material/Collapse';
+import AdapterDateFns from '@mui/lab/AdapterDateFns';
+import LocalizationProvider from '@mui/lab/LocalizationProvider';
+import DatePicker from '@mui/lab/DatePicker';
 
 import {TransitionAlert} from "../common/Alerts";
 import {SimpleIDB} from "../common/SimpleIDB";
@@ -21,7 +24,8 @@ import config from "../config.json";
 
 const useStyles = makeStyles((theme) => ({
   textMessage: {
-    fontSize: "large"
+    fontSize: "large",
+    minHeight: '200px',
   },
   analysis: {
     maxWidth: '100%',
@@ -53,7 +57,7 @@ const useStyles = makeStyles((theme) => ({
   },
   code: {
     whiteSpace: "pre-wrap",
-  }
+  },
 }));
 
 
@@ -68,7 +72,7 @@ function ProcessingAlert(props) {
           severity="info"
           sx={{ mb: 2 }}
         >
-          Image is being processed. Please wait.
+          Loading service...
         </Alert>
       </Collapse>
     </Box>
@@ -81,7 +85,10 @@ function ProcessingAlert(props) {
 function ImageAnalysisCardMeasurement(props) {
   const classes = useStyles();
   const [message, setMessage] = useState("");
-  const [errorMessage, setErrorMessage] = useState(null);
+  const [alert, setAlert] = useState({
+    severity: null,
+    message: null
+  });
   const [isBeingProcessed, setIsBeingProcessed] = useState(false);
   const [retrievedData, setRetrievedData] = useState(null);
 
@@ -125,13 +132,22 @@ function ImageAnalysisCardMeasurement(props) {
     }).catch(error => {
       setIsBeingProcessed(false);
       if (error.response.status === 503) {
-        setErrorMessage("Service " + service.name + " unavailable");
+        setAlert({
+          'severity': 'error',
+          'message': "Service " + service.name + " unavailable"
+        });
       } else if (error.response.status === 422) {
-        setErrorMessage("Service could not process image");
+        setAlert({
+          'severity': 'error',
+          'message': "Service could not process image" 
+        });
       } else if (error.response.status === 404) {
-        // Pass, expected behaviour when the image has not been processed.
+        // Pass, expected behaviour when the image has not been processed. 
       } else {
-        setErrorMessage("Service " + service.name + " error");
+        setAlert({
+          'severity': 'error',
+          'message': "Service " + service.name + " error"
+        });
       }
       console.log("ERROR", error);
       setMessage("Generate results");
@@ -171,7 +187,10 @@ function ImageAnalysisCardMeasurement(props) {
   }
 
   function onCloseError () {
-    setErrorMessage(null);
+    setAlert({
+      severity: null,
+      message: null
+    });
   }
 
   return (
@@ -206,12 +225,12 @@ function ImageAnalysisCardMeasurement(props) {
             {retrievedData}
           </code>
           {
-            errorMessage
+            alert.message
             &&
             <TransitionAlert
               severity="error"
-              message={errorMessage}
-              setMessage={setErrorMessage}
+              alert={alert}
+              setAlert={setAlert}
               open={true} />
           }
           {
@@ -230,7 +249,10 @@ function ImageAnalysisCardMeasurement(props) {
 function ImageAnalysisCard(props) {
   const classes = useStyles();
   const [message, setMessage] = useState("");
-  const [errorMessage, setErrorMessage] = useState(null);
+  const [alert, setAlert] = useState({
+    severity: null,
+    message: null
+  });
   const [isBeingProcessed, setIsBeingProcessed] = useState(false);
   const [image, setImage] = useState(null);
   const [imageBlob, setImageBlob] = useState(null);
@@ -290,14 +312,30 @@ function ImageAnalysisCard(props) {
 
     }).catch(error => {
       setIsBeingProcessed(false);
-      if (error.response.status === 503) {
-        setErrorMessage("Service " + service.name + " unavailable");
-      } else if (error.response.status === 422) {
-        setErrorMessage("Service could not process image");
-      } else if (error.response.status === 404) {
-        // Pass, expected behaviour when the image has not been processed. 
+      if (error.response) {
+        if (error.response.status === 503) {
+          setAlert({
+            'severity': 'error',
+            'message': "Service " + service.name + " unavailable"
+          });
+        } else if (error.response.status === 422) {
+          setAlert({
+            'severity': 'error',
+            'message': "Service could not process image" 
+          });
+        } else if (error.response.status === 404) {
+          // Pass, expected behaviour when the image has not been processed. 
+        } else {
+          setAlert({
+            'severity': 'error',
+            'message': "Service " + service.name + " error"
+          });
+        }
       } else {
-        setErrorMessage("Service " + service.name + " error");
+          setAlert({
+            'severity': 'error',
+            'message': "Service " + service.name + " error"
+          });
       }
       setMessage("Generate results");
       setImage(<></>);
@@ -331,7 +369,10 @@ function ImageAnalysisCard(props) {
   }
 
   function onCloseError () {
-    setErrorMessage(null);
+    setAlert({
+      severity: null,
+      message: null
+    });
   }
 
   return (
@@ -364,12 +405,11 @@ function ImageAnalysisCard(props) {
         </Box>
         <Box m={1} pt={1} textAlign='left'>
           {
-            errorMessage
+            alert.message
             &&
             <TransitionAlert
-              severity="error"
-              message={errorMessage}
-              setMessage={setErrorMessage}
+              alert={alert}
+              setAlert={setAlert}
               open={true} />
           }
           {
@@ -396,12 +436,18 @@ export default function ImageView (props) {
   const [state, setState] = useState({
     // Initial state
     title: props.image.info.title,
-    text: props.image.info.text
+    text: props.image.info.text,
+    patientNin: props.image.info.patientNin || '',
+    imageDate: props.image.info.date,
   });
   const [title, setTitle] = useState(props.image.info.title);
 
-  // Force scroll to top
-  window.scrollTo(0, 0);
+  useEffect(()=>{
+    // Force scroll to top
+    window.scrollTo(0, 0);
+    // Disable incorrect linting
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   function allRequiredFilled() {
     return (!state.title)
@@ -411,17 +457,34 @@ export default function ImageView (props) {
     setState({
       // Initial state
       title: props.image.info.title,
-      text: props.image.info.text
+      text: props.image.info.text,
+      patientNin: props.image.info.patientNin,
+      imageDate: props.image.info.date,
     });
   }
 
   const services = props.services;
   // console.log("SERVICES", services);
 
+  function BasicDatePicker() {
+    return (
+      <LocalizationProvider dateAdapter={AdapterDateFns}>
+        <DatePicker
+          label="Image date"
+          value={state.imageDate}
+          onChange={(newValue) => {
+            setState({...state, imageDate: newValue });
+          }}
+          renderInput={(params) => <TextField {...params} />}
+        />
+      </LocalizationProvider>
+    );
+  }
+
   // ------------------------------------------------------------------         
   // -> Database operations
 
-  function insertObject (id, image) {
+  function setObject (id, image) {
     try {
       SimpleIDB.set(id, image).then();
     } catch(e) {
@@ -450,13 +513,23 @@ export default function ImageView (props) {
     // Create an object of formData
     const formData = new FormData();
 
-
     let title = state.title ? state.title : '';
     let text = state.text ? state.text : '';
+    let imageDate = state.imageDate;
+    if (imageDate == null) {
+      imageDate = new Date();
+    }
+    let imageDateText = imageDate;
+    try {
+      imageDateText = imageDate.toISOString().substr(0, 10);
+    } catch(err) {}
+    let patientNin = (state.patientNin === '') ? null : state.patientNin;
 
     // -> Update the formData object
     formData.append("title", title);
     formData.append("text", text);
+    formData.append("image_date", imageDateText);
+    formData.append("patient_nin", patientNin);
 
     // const image = {
     //   format: "png",
@@ -481,22 +554,24 @@ export default function ImageView (props) {
           }
         }
     ).then(response => {
-      console.log(response);
+      console.log('Response', response);
       if (response.status === 200) {
         setAlert({
           severity: "success",
           message: "Image information correctly updated."
         });
+        setTitle(state.title);
+        // Refresh gallery
+        delete props.images[props.image.id];
+        props.doRefresh();
+        //props.handleActionFinished();
       }
-      setTitle(state.title);
-      // Refresh gallery
-      props.doRefresh();
-      props.handleActionFinished();
     }).catch(error => {
-      setAlert({
-        severity: "error",
-        message: "Image information could not be updated."
-      });
+      //console.log('Error', error);
+        setAlert({
+          severity: "error",
+          message: "Image information correctly updated."
+        });
     });
   };
 
@@ -567,6 +642,24 @@ export default function ImageView (props) {
                 onChange={onInputChange("title")}
                 value={state.title}
               />
+              {/* PATIENT NIN */}
+              <TextField
+                variant="outlined"
+                margin="normal"
+                fullWidth
+                id="patientNin"
+                label="Patient NIN"
+                name="patientNin"
+                multiline
+                rows={1}
+                rowsMax={1}
+                onChange={onInputChange("patientNin")}
+                value={state.patientNin}
+              />
+              {/* IMAGE DATE */}
+              <Box pt={2} pb={2}>
+                <BasicDatePicker />
+              </Box>
               {/* TEXT */}
               <TextField
                 variant="outlined"
@@ -616,10 +709,9 @@ export default function ImageView (props) {
                     alert.message
                     &&
                     <TransitionAlert
-                      severity="success"
                       alert={alert}
                       setAlert={setAlert}
-                      open={true} />
+                      open={alert.message ? true : false} />
                   }
                 </ Box>
               </div>
@@ -629,7 +721,6 @@ export default function ImageView (props) {
           </div>
         </div>
       </div>
-      <Footer />
     </React.Fragment>
   );
 }

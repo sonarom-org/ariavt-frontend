@@ -61,7 +61,7 @@ export default function EditServiceForm(props) {
   }
 
   // On file upload (click the upload button)
-  const onFileUpload = () => {
+  async function onFileUpload() {
 
     // Request made to the backend api
     // Send formData object
@@ -147,7 +147,7 @@ export default function EditServiceForm(props) {
 
 
   return (
-    <div>
+    <Box>
       <Grid
         container
         direction="row"
@@ -157,15 +157,6 @@ export default function EditServiceForm(props) {
         <h2>
           {props.title}
         </h2>
-        {/*<Button*/}
-        {/*  color="default"*/}
-        {/*  // disabled={allRequiredFilled()}*/}
-        {/*  variant="contained"*/}
-        {/*  Gallery="label"*/}
-        {/*  onClick={onFileUpload}*/}
-        {/*>*/}
-        {/*  Close*/}
-        {/*</Button>*/}
       </Grid>
       <div>
 
@@ -179,13 +170,7 @@ export default function EditServiceForm(props) {
        />
 
       </div>
-      <div className={classes.textMessage}>
-        <Box pt={4}>
-          {message}
-        </ Box>
-      </div>
-
-    </div>
+    </Box>
   );
 
 }

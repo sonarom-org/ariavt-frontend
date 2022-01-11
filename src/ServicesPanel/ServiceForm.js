@@ -65,8 +65,8 @@ export default function ServiceForm(props) {
         label="Description"
         name="description"
         multiline
-        rows={16}
-        rowsMax={20}
+        rows={8}
+        rowsMax={12}
         onChange={props.onInputChange("description")}
         value={props.state.description}
       />

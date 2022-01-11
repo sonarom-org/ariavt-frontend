@@ -41,7 +41,7 @@ export default function EditItem(props) {
             {/*</Button>*/}
           </Toolbar>
         </AppBar>
-        <div className={classes.dialogContent}>
+        <div className={props.classDialogContent}>
           {props.form}
         </div>
       </Dialog>

@@ -103,7 +103,7 @@ export default function EditUserForm(props) {
   }
 
   return (
-    <div>
+    <Box>
       <Grid
         container
         direction="row"
@@ -244,7 +244,7 @@ export default function EditUserForm(props) {
         </ Box>
       </div>
 
-    </div>
+    </Box>
   );
 
 }
