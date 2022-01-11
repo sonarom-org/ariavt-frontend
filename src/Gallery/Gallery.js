@@ -463,6 +463,8 @@ function GalleryCards(props) {
         handleClose={handleBack}
         handleActionFinished={empty}
         itemsName={'Analysis'}
+        // TODO: Warning: can't perform React state update on an unmounted...
+        //  Probably, due to using the component 'as variable' for form.
         form=
         {<ImageView
          image={imageView.image}
