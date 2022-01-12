@@ -427,12 +427,14 @@ function ImageAnalysisCard(props) {
 export default function ImageView (props) {
   // Styles
   const classes = useStyles();
+  const token = getToken();
 
   // State
   const [alert, setAlert] = useState({
     severity: null,
     message: null
   });
+
   const [state, setState] = useState({
     // Initial state
     title: props.image.info.title,
@@ -441,8 +443,45 @@ export default function ImageView (props) {
     imageDate: props.image.info.date,
   });
   const [title, setTitle] = useState(props.image.info.title);
+  const [image, setImage] = useState({});
+
+  function getOriginalImage() {
+      console.log(image.image);
+    const params = new URLSearchParams();
+    params.append('downscale', false);
+    axios.get(
+      config.API_URL + "/images/" + props.image.id,
+      {
+        // Set authentication header
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+        params: params,
+        // The response is a Blob object containing the binary data.
+        responseType: 'blob'
+      }
+    ).then(response => {
+      console.log('RESPONSE IMAGE', response);
+      const blob =
+        new Blob(
+          [response.data],
+          { type: response.headers["content-type"] }
+        );
+      const image_url = URL.createObjectURL(blob);
+      console.log(image_url);
+      setImage({
+        ...image,
+        image: image_url,
+      });
+    }).catch(error => {
+      console.log(error);
+      // TODO: add error message
+    });
+
+  }
 
   useEffect(()=>{
+    getOriginalImage();
     // Force scroll to top
     window.scrollTo(0, 0);
     // Disable incorrect linting
@@ -586,10 +625,12 @@ export default function ImageView (props) {
   }
 
   return (
-    <React.Fragment>
+    <Box>
       <div className={classes.fullContent}>
         <div style={{
-          display: 'flex', justifyContent: 'space-between', alignItems: 'center'
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center'
         }}>
           <Button
               variant="contained"
@@ -607,21 +648,26 @@ export default function ImageView (props) {
         <div className={"dashboardContent"}>
           <div className={classes.columnImage}>
 
+            {/* IMPORTANT
+            Using image.image as key allows to reload the Blob:
+            https://github.com/facebook/react-native/issues/9195
+            */}
             <ImageAnalysisCard
-              image={props.image}
+              key={image.image}
+              image={image}
               title={"Original retinography"}
             />
 
             {Object.keys(services).map(key => (
               (services[key].resultType.toLowerCase() === "image") ?
               <ImageAnalysisCard
-                key={key}
-                originalImage={props.image}
+                key={image.image}
+                originalImage={image}
                 service={services[key]}
               />
                 : <ImageAnalysisCardMeasurement
-                  key={key}
-                  originalImage={props.image}
+                  key={image.image}
+                  originalImage={image}
                   service={services[key]}
                 />
             ))}
@@ -721,6 +767,6 @@ export default function ImageView (props) {
           </div>
         </div>
       </div>
-    </React.Fragment>
+    </Box>
   );
 }
