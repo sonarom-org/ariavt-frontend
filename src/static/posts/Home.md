@@ -1,5 +1,0 @@
-
-## Analysis methods available
-
-
-

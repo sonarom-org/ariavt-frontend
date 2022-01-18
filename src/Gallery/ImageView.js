@@ -470,7 +470,8 @@ export default function ImageView (props) {
       const image_url = URL.createObjectURL(blob);
       console.log(image_url);
       setImage({
-        ...image,
+        id: props.image.id,
+        info: props.image.info,
         image: image_url,
       });
     }).catch(error => {
@@ -640,7 +641,7 @@ export default function ImageView (props) {
             Back
           </Button>
           <Typography variant={'h5'}>
-            Analysis of image <b>{title}</b>
+            Analysis of image <b>{image.id}</b>
           </Typography>
           <div />
         </div>

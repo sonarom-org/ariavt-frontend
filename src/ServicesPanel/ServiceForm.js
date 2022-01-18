@@ -96,6 +96,10 @@ export default function ServiceForm(props) {
         </Select>
       </FormControl>
 
+      <p>
+        * Required.
+      </p>
+
       <Box pt={2}>
         <Grid
           container
